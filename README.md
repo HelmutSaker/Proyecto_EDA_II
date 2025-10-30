@@ -1,6 +1,6 @@
-Proyecto por el curso de Estructuras de Datos y Algoritmos II por la Universidad de Lima.
+Proyecto por el curso de Estructuras de Datos y Algoritmos II por la Universidad de Lima. <br>
 
-Integrantes:
+Integrantes:   <br>
 Emerson Alejos <br>
 Johan Astorga  <br>
 Gonzalo Paz    <br>
