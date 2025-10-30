@@ -1,4 +1,4 @@
-Proyecto por el curso de Estructuras de Datos y Algoritmos II por la Universidad de Lima. <br>
+Proyecto para el curso de Estructuras de Datos y Algoritmos II por la Universidad de Lima. Ciclo 2025-2         <br>
 
 Integrantes:   <br>
 Emerson Alejos <br>
