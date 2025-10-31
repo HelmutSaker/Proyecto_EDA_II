@@ -1,10 +1,6 @@
 #include <iostream>
+#include "Paciente.h"
 using namespace std;
-struct Paciente{
-    int idPaciente;
-    string nombre;
-    int nivelUrg;
-};
 
 class Hash{
 private:
@@ -25,17 +21,17 @@ public:
     int hashFunction(int id){
         return id%SIZE;
     }
-    void insert(Paciente key){
-        int index = hashFunction(key.idPaciente);
+    void insert(Paciente p){
+        int index = hashFunction(p.idPaciente);
         int tmp = index;
         while(ocupado[index]){
            index = (index+1)%SIZE;
             if(index==tmp){
-                cout<<"la tabla esta llena"<<endl;
+                cout<<"La tabla esta llena"<<endl;
                 return;
             }
         }
-        tabla[index] = key;
+        tabla[index] = p;
         ocupado[index] = true;
         numElementos++;
     }
@@ -50,12 +46,3 @@ public:
 
 };
 
-int main()
-{
-    Hash tablitahash;
-
-    Paciente p1 = {1, "Andrea", 3};
-    tablitahash.insert(p1);
-    tablitahash.print();
-    return 0;
-}
