@@ -2,72 +2,98 @@
 #include "Paciente.h"
 using namespace std;
 
-class Hash{
+class TablaHash{
 private:
     Paciente* tabla;
     bool* ocupado;
-    int SIZE = 10;
-    int numElementos;
+    int tam;
+    int colisiones;
+    int elementos;
 
 public:
-    Hash() {
-        tabla = new Paciente[SIZE];
-        ocupado = new bool[SIZE];
-        for (int i = 0; i < SIZE; i++)
+    TablaHash(int t) {
+        tam = t;
+        tabla = new Paciente[tam];
+        ocupado = new bool[tam];
+        colisiones = 0;
+        elementos = 0;
+
+        for (int i = 0; i < tam; i++)
             ocupado[i] = false;
-
-        numElementos = 0;
     }
 
-    ~Hash(){
-        delete[] ocupado;
+    ~TablaHash(){
         delete[] tabla;
+        delete[] ocupado;
     }
 
-    int hashFunction(int id){
-        return id % SIZE;
+    int funcionHash(int clave){
+        return clave % tam;
     }
 
-    void insert(Paciente p){
-        int index = hashFunction(p.idPaciente);
-        int temp = index;
+    int funcionHashNegativa(int clave){
+        int r = clave % tam;
+        if (r < 0)
+            r = r + tam;
+        return r;
+    }
 
-        while(ocupado[index]){
-            index = (index + 1) % SIZE;
-            if (index == temp){
-                cout << "Tabla llena" << endl;
-                return;
-            }
+    int funcionHash2(int clave){
+        double A = 0.6180339887;
+        double fraccion = (clave * A) - int(clave * A);
+        int hash = int(tam * fraccion);
+        return hash;
+    }
+
+    float factorCarga(){
+        return (float) elementos/tam;
+    }
+
+    void insertar(Paciente p){
+        int pos = funcionHash2(p.idPaciente);
+        int intentos = 0;
+
+        while(ocupado[pos] && intentos < tam){
+            pos = (pos + 1) % tam;
+            intentos++;
+            colisiones++;
+        }   
+        if (intentos < tam){
+            tabla[pos] = p;
+            ocupado[pos] = true;
+            elementos++;
+        } else {
+            cout << "Tabla llena" << endl;
         }
-
-        tabla[index] = p;
-        ocupado[index] = true;
-        numElementos++;
     }
 
-    void search(int id){
-        int pos = hashFunction(id);
-        int temp = pos;
+    void buscar(int clave){
+        int pos = funcionHash2(clave);
+        int intentos = 0;
 
-        while (ocupado[pos]){
-            if (tabla[pos].idPaciente == id){
-                cout << "Paciente encontrado:\n";
+        while (ocupado[pos] && intentos < tam){
+            if (tabla[pos].idPaciente == clave){
+                cout << "Paciente encontrado en " << pos << ":\n";
                 cout << pos << " --> ID: " << tabla[pos].idPaciente << " | Nombre: " << tabla[pos].nombre << " | Urgencia: " << tabla[pos].nivelUrg << endl;
                 return;
             }
-            pos = (pos + 1) % SIZE;
-            if (pos == temp) break;
+            pos = (pos + 1) % tam;
+            intentos++;
         }
         cout << "Paciente no encontrado" << endl; 
         
     }
-    void print(){
-        for(int i=0;i<SIZE;i++)
+    void imprimir(){
+        for(int i = 0; i < tam; i++)
             if (ocupado[i]){
                 cout << i << " --> ID: " << tabla[i].idPaciente << " | Nombre: " << tabla[i].nombre << " | Urgencia: " << tabla[i].nivelUrg << endl;
             } else {
                 cout << i << " --> " << endl;
             }
+    }
+
+    int numeroColisiones(){
+        return colisiones;
     }
 
 };

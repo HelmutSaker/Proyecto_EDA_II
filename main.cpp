@@ -5,23 +5,23 @@
 using namespace std;
 
 int main(){
-    Hash tablaHash;
+    TablaHash tabla(20);
     MaxHeap heap(20);
 
     Paciente p1 = {1, "Jose", 4};
     Paciente p2 = {2, "Luis", 2};
     Paciente p3 = {3, "Cesar", 5};
 
-    tablaHash.insert(p1);
-    tablaHash.insert(p2);
-    tablaHash.insert(p3);
+    tabla.insertar(p1);
+    tabla.insertar(p2);
+    tabla.insertar(p3);
 
     heap.insert(p1);
     heap.insert(p2);
     heap.insert(p3);
 
     cout << "TABLA HASH:\n";
-    tablaHash.print();
+    tabla.imprimir();
 
     cout << "HEAP (URGENCIA):\n";
     heap.print();
