@@ -4,23 +4,23 @@ using namespace std;
 
 class Hash{
 private:
-    Paciente** tabla;
+    Paciente* tabla;
+    bool* ocupado;
     int SIZE = 10;
     int numElementos;
 
 public:
-    Hash(){
-        tabla = new Paciente*[SIZE];
-        for(int i=0;i<SIZE;i++)
-            tabla[i] = nullptr;
+    Hash() {
+        tabla = new Paciente[SIZE];
+        ocupado = new bool[SIZE];
+        for (int i = 0; i < SIZE; i++)
+            ocupado[i] = false;
 
         numElementos = 0;
     }
 
     ~Hash(){
-        for(int i=0; i<SIZE; i++){
-            delete tabla[i];
-        }
+        delete[] ocupado;
         delete[] tabla;
     }
 
@@ -32,7 +32,7 @@ public:
         int index = hashFunction(p.idPaciente);
         int temp = index;
 
-        while(tabla[index] != nullptr){
+        while(ocupado[index]){
             index = (index + 1) % SIZE;
             if (index == temp){
                 cout << "Tabla llena" << endl;
@@ -40,7 +40,8 @@ public:
             }
         }
 
-        tabla[index] = new Paciente(p);
+        tabla[index] = p;
+        ocupado[index] = true;
         numElementos++;
     }
 
@@ -48,10 +49,10 @@ public:
         int pos = hashFunction(id);
         int temp = pos;
 
-        while (tabla[pos] != nullptr){
-            if (tabla[pos]->idPaciente == id){
+        while (ocupado[pos]){
+            if (tabla[pos].idPaciente == id){
                 cout << "Paciente encontrado:\n";
-                cout << pos << " --> ID: " << tabla[pos]->idPaciente << " | Nombre: " << tabla[pos]->nombre << " | Urgencia: " << tabla[pos]->nivelUrg << endl;
+                cout << pos << " --> ID: " << tabla[pos].idPaciente << " | Nombre: " << tabla[pos].nombre << " | Urgencia: " << tabla[pos].nivelUrg << endl;
                 return;
             }
             pos = (pos + 1) % SIZE;
@@ -62,8 +63,8 @@ public:
     }
     void print(){
         for(int i=0;i<SIZE;i++)
-            if (tabla[i] != nullptr){
-                cout << i << " --> ID: " << tabla[i]->idPaciente << " | Nombre: " << tabla[i]->nombre << " | Urgencia: " << tabla[i]->nivelUrg << endl;
+            if (ocupado[i]){
+                cout << i << " --> ID: " << tabla[i].idPaciente << " | Nombre: " << tabla[i].nombre << " | Urgencia: " << tabla[i].nivelUrg << endl;
             } else {
                 cout << i << " --> " << endl;
             }
