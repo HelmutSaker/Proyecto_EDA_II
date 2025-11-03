@@ -30,11 +30,11 @@ class Node{
             while (getline(ss, segment, '/')) {
                 fechaInt.push_back(stoi(segment));
             }
-            if(fechaInt[1]>12&&fechaInt[1]<0){
+            if(fechaInt[1]>12||fechaInt[1]<0){
                 cout<<"Mes invalido"<<endl;
                 return;
             }
-            if(fechaInt[0]>31&&fechaInt[0]<0){
+            if(fechaInt[0]>31||fechaInt[0]<0){
                 cout<<"Dia invalido"<<endl;
                 return;
             }
@@ -47,11 +47,11 @@ class Node{
             while (getline(ss, segment, ':')) {
                 horaInt.push_back(stoi(segment));
             }
-            if(horaInt[0]>23&&horaInt[0]<0){
+            if(horaInt[0]>23||horaInt[0]<0){
                 cout<<"Hora invalida"<<endl;
                 return;
             }
-            if(horaInt[1]>59&&horaInt[1]<0){
+            if(horaInt[1]>59||horaInt[1]<0){
                 cout<<"Minuto invalido"<<endl;
                 return;
             }
@@ -117,22 +117,17 @@ class ArbolAVL{
             return nuevaRaiz;
         }
         vector<int> Fecha(string valor) {
-            vector<int> fechaInt;
-            stringstream ss(valor);
-            string segment;
-            while (getline(ss, segment, '/')) {
-                fechaInt.push_back(stoi(segment));
-            }
-            if(fechaInt[1]>12&&fechaInt[1]<0){
-                cout<<"Mes invalido"<<endl;
-                return;
-            }
-            if(fechaInt[0]>31&&fechaInt[0]<0){
-                cout<<"Dia invalido"<<endl;
-                return;
-            }
-            return fechaInt;
-        }
+        vector<int> fechaInt; stringstream ss(valor); string segment; 
+            while (getline(ss, segment, '/')) { 
+            fechaInt.push_back(stoi(segment)); } 
+            if(fechaInt[1]>12||fechaInt[1]<0){ 
+                cout<<"Mes invalido"<<endl; 
+                return {}; 
+            } 
+            if(fechaInt[0]>31||fechaInt[0]<0){ 
+                cout<<"Dia invalido"<<endl; 
+                return {}; 
+            } return fechaInt; }
         vector<int> HoraS(string valor) { 
             vector<int> horaInt;
             stringstream ss(valor);
@@ -140,13 +135,13 @@ class ArbolAVL{
             while (getline(ss, segment, ':')) {
                 horaInt.push_back(stoi(segment));
             }
-            if(horaInt[0]>23&&horaInt[0]<0){
+            if(horaInt[0]>23||horaInt[0]<0){
                 cout<<"Hora invalida"<<endl;
-                return;
+                return {};
             }
-            if(horaInt[1]>59&&horaInt[1]<0){
+            if(horaInt[1]>59||horaInt[1]<0){
                 cout<<"Minuto invalido"<<endl;
-                return;
+                return {};
             }
             return horaInt;
         }
@@ -261,6 +256,7 @@ class ArbolAVL{
             if(nodo!=nullptr){
                 inorder(nodo->getIzquierda());
                 cout << nodo->getFecha()[0] << "/"<< nodo->getFecha()[1] << "/"<< nodo->getFecha()[2];
+                cout << " "<< nodo->getHoraS()[0] << ":"<< nodo->getHoraS()[1] << " | ";
                 inorder(nodo->getDerecha());
             }
         }
@@ -268,6 +264,7 @@ class ArbolAVL{
         void preorder(Node *nodo) {
             if(nodo != nullptr) {
                 cout << nodo->getFecha()[0] << "/"<< nodo->getFecha()[1] << "/"<< nodo->getFecha()[2];
+                cout << " "<< nodo->getHoraS()[0] << ":"<< nodo->getHoraS()[1] << " | ";
                 preorder(nodo->getIzquierda());
                 preorder(nodo->getDerecha());
             }
@@ -312,8 +309,11 @@ int main() {
     arbolito.insertarR("25/12/2023","10:10");
     arbolito.preorderR(); cout << endl;
     arbolito.insertarR("04/04/2024","11:11");
-    arbolito.insertarR("12/05/2023","14:30"); // Fecha y hora ya ocupada
+    arbolito.insertarR("12/05/2023","14:30"); 
     arbolito.insertarR("12/05/2023","15:30");
-    arbolito.preorderR(); cout << endl;
+    arbolito.preorderR();cout << endl;
+    arbolito.inorderR(); cout << endl;
+    arbolito.buscarR("15/07/2023","12:00") ? cout << "Encontrado\n" : cout << "No encontrado\n";
+    arbolito.buscarR("31/12/2022","23:59") ? cout << "Encontrado\n" : cout << "No encontrado\n";
     return 0;
 }
