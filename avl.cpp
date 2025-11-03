@@ -1,24 +1,62 @@
 #include <iostream>
+#include <sstream>
+#include <vector>
 using namespace std;
 class Node{
     private:
-        int dato;
+        vector<int> fecha;
+        vector<int> horaI;
         int altura;
         Node * izquierda;
         Node * derecha;
     public:
-        Node(int n){
-            dato = n;
+        Node(string n,string h){
             altura = 1;
             izquierda = nullptr;
             derecha = nullptr;
+            setFecha(n);
+            setHoraS(h);   
         }
-        int getDato() { return dato; }
+        vector<int> getFecha() { return fecha; }
+        vector<int> getHoraS() { return horaI; }
         int getAltura() { return altura; }
         Node* getIzquierda() { return izquierda; }
         Node* getDerecha() { return derecha; }
     
-        void setDato(int valor) { dato = valor; }
+        void setFecha(string valor) {
+            vector<int> fechaInt;
+            stringstream ss(valor);
+            string segment;
+            while (getline(ss, segment, '/')) {
+                fechaInt.push_back(stoi(segment));
+            }
+            if(fechaInt[1]>12&&fechaInt[1]<0){
+                cout<<"Mes invalido"<<endl;
+                return;
+            }
+            if(fechaInt[0]>31&&fechaInt[0]<0){
+                cout<<"Dia invalido"<<endl;
+                return;
+            }
+            fecha = fechaInt;
+        }
+        void setHoraS(string valor) { 
+            vector<int> horaInt;
+            stringstream ss(valor);
+            string segment;
+            while (getline(ss, segment, ':')) {
+                horaInt.push_back(stoi(segment));
+            }
+            if(horaInt[0]>23&&horaInt[0]<0){
+                cout<<"Hora invalida"<<endl;
+                return;
+            }
+            if(horaInt[1]>59&&horaInt[1]<0){
+                cout<<"Minuto invalido"<<endl;
+                return;
+            }
+            horaI = horaInt;
+        }
         void setAltura(int valor) { altura = valor; }
         void setIzquierda(Node* nodo) { izquierda = nodo; }
         void setDerecha(Node* nodo) { derecha = nodo; }
@@ -49,8 +87,8 @@ class ArbolAVL{
             nodo->setAltura(alt);
         }
         
-        void insertarR(int n){
-            insertar(raiz, n);
+        void insertarR(string n,string h) {
+            insertar(raiz, n,h);
         }
         
         Node * rotacionIzquierda(Node *actualRaiz) {
@@ -78,19 +116,111 @@ class ArbolAVL{
             
             return nuevaRaiz;
         }
-        
-        void insertar(Node*& nodo, int n){
-            if(nodo==nullptr){
-                nodo = new Node(n);
+        vector<int> Fecha(string valor) {
+            vector<int> fechaInt;
+            stringstream ss(valor);
+            string segment;
+            while (getline(ss, segment, '/')) {
+                fechaInt.push_back(stoi(segment));
             }
-            else if (n< nodo->getDato()){
+            if(fechaInt[1]>12&&fechaInt[1]<0){
+                cout<<"Mes invalido"<<endl;
+                return;
+            }
+            if(fechaInt[0]>31&&fechaInt[0]<0){
+                cout<<"Dia invalido"<<endl;
+                return;
+            }
+            return fechaInt;
+        }
+        vector<int> HoraS(string valor) { 
+            vector<int> horaInt;
+            stringstream ss(valor);
+            string segment;
+            while (getline(ss, segment, ':')) {
+                horaInt.push_back(stoi(segment));
+            }
+            if(horaInt[0]>23&&horaInt[0]<0){
+                cout<<"Hora invalida"<<endl;
+                return;
+            }
+            if(horaInt[1]>59&&horaInt[1]<0){
+                cout<<"Minuto invalido"<<endl;
+                return;
+            }
+            return horaInt;
+        }
+        bool FechaIzquierda(vector<int> f1, vector<int> f2){
+            if(f1[2]< f2[2] ||
+               (f1[2]== f2[2] && f1[1]< f2[1]) ||
+               (f1[2]== f2[2] && f1[1]== f2[1] && f1[0]< f2[0]) ){
+                return true;
+            }
+            return false;
+        }
+        bool FechaDerecha(vector<int> f1, vector<int> f2){
+            if(f1[2]> f2[2] ||
+               (f1[2]== f2[2] && f1[1]> f2[1]) ||
+               (f1[2]== f2[2] && f1[1]== f2[1] && f1[0]> f2[0]) ){
+                return true;
+            }
+            return false;
+        }
+        bool FechaIgual(vector<int> f1, vector<int> f2){
+            if(f1[2]== f2[2] && f1[1]== f2[1] && f1[0]== f2[0]){
+                return true;
+            }
+            return false;
+        }
+        bool HoraIzquierda(vector<int> f1, vector<int> f2){
+            if(f1[2]< f2[2] ||
+               (f1[2]== f2[2] && f1[1]< f2[1]) ||
+               (f1[2]== f2[2] && f1[1]== f2[1] && f1[0]< f2[0]) ){
+                return true;
+            }
+            return false;
+        }
+        bool HoraDerecha(vector<int> f1, vector<int> f2){
+            if(f1[2]> f2[2] ||
+               (f1[2]== f2[2] && f1[1]> f2[1]) ||
+               (f1[2]== f2[2] && f1[1]== f2[1] && f1[0]> f2[0]) ){
+                return true;
+            }
+            return false;
+        }
+        bool HoraIgual(vector<int> f1, vector<int> f2){
+            if(f1[2]== f2[2] && f1[1]== f2[1] && f1[0]== f2[0]){
+                return true;
+            }
+            return false;
+        }
+        void insertar(Node*& nodo, string n, string h) {
+            
+            if(nodo==nullptr){
+                nodo = new Node(n,h);
+            }
+            else if (FechaIzquierda(Fecha(n), nodo->getFecha())) {
                 Node * tmp = nodo->getIzquierda();
-                insertar(tmp, n);
+                insertar(tmp, n,h);
                 nodo->setIzquierda (tmp);
+            }
+            else if(FechaIgual(Fecha(n), nodo->getFecha())){
+                if(HoraIgual(HoraS(h), nodo->getHoraS())){
+                    cout<<"Fecha y hora ya ocupada"<<endl;
+                    return;
+                }else if(HoraIzquierda(HoraS(h), nodo->getHoraS())){
+                    Node * tmp = nodo->getIzquierda();
+                    insertar(tmp, n,h);
+                    nodo->setIzquierda (tmp);
+                }else{
+                    Node * tmp = nodo->getDerecha();
+                    insertar(tmp, n,h);
+                    nodo->setDerecha (tmp);
+                }
             }
             else{
                 Node * tmp = nodo->getDerecha();
-                insertar(tmp, n);
+                insertar(tmp, n,h);
                 nodo->setDerecha (tmp);
             }
             
@@ -98,21 +228,21 @@ class ArbolAVL{
             int facBalance = factorBalance(nodo);
             
             // der - der
-            if (facBalance < -1 && n > nodo->getDerecha()->getDato()) {
+            if (facBalance < -1 && FechaDerecha(Fecha(n), nodo->getDerecha()->getFecha())) {
                 nodo = rotacionIzquierda(nodo);
             }
             // izq - izq
-            if (facBalance > 1 && n < nodo->getIzquierda()->getDato()) {
+            if (facBalance > 1 && FechaIzquierda(Fecha(n), nodo->getIzquierda()->getFecha())) {
                 nodo = rotacionDerecha(nodo);
             }
             // izq - der
-            if (facBalance > 1 && n > nodo->getIzquierda()->getDato() ) {
+            if (facBalance > 1 && FechaDerecha(Fecha(n), nodo->getIzquierda()->getFecha()) ) {
                 Node *tmp = rotacionIzquierda(nodo->getIzquierda());
                 nodo->setIzquierda(tmp);
                 nodo = rotacionDerecha(nodo);
             }
             // der - izq
-            if (facBalance < -1 && n < nodo->getDerecha()->getDato()) {
+            if (facBalance < -1 && FechaIzquierda(Fecha(n), nodo->getDerecha()->getFecha()) ) {
                 Node *tmp = rotacionDerecha(nodo->getDerecha());
                 nodo->setDerecha(tmp);
                 nodo = rotacionIzquierda(nodo);
@@ -130,53 +260,60 @@ class ArbolAVL{
         void inorder(Node*nodo){
             if(nodo!=nullptr){
                 inorder(nodo->getIzquierda());
-                cout << nodo->getDato() << " ";
+                cout << nodo->getFecha()[0] << "/"<< nodo->getFecha()[1] << "/"<< nodo->getFecha()[2];
                 inorder(nodo->getDerecha());
             }
         }
         
         void preorder(Node *nodo) {
             if(nodo != nullptr) {
-                cout << nodo->getDato() << " ";
+                cout << nodo->getFecha()[0] << "/"<< nodo->getFecha()[1] << "/"<< nodo->getFecha()[2];
                 preorder(nodo->getIzquierda());
                 preorder(nodo->getDerecha());
             }
         }
         
-        bool buscarR(int n){
-            return buscar(raiz, n);
+        bool buscarR(string n,string h){
+            return buscar(raiz, n,h);
         }
-        bool buscar(Node* nodo, int n){
+        bool buscar(Node* nodo, string n,string h){
             if (nodo == nullptr) 
                 return false;
-            if (n == nodo->getDato()) 
+            if (FechaIgual(Fecha(n), nodo->getFecha())&&HoraIgual(HoraS(h), nodo->getHoraS()))
                 return true;
-            if (n < nodo->getDato())
-                return buscar(nodo->getIzquierda(), n);
+            if(FechaIgual(Fecha(n), nodo->getFecha())&&!HoraIgual(HoraS(h), nodo->getHoraS())){
+                if(HoraIzquierda(HoraS(h), nodo->getHoraS()))
+                    return buscar(nodo->getIzquierda(), n,h);
+                else
+                    return buscar(nodo->getDerecha(), n,h);
+            }
+            if (FechaIzquierda(Fecha(n), nodo->getFecha()))
+                return buscar(nodo->getIzquierda(), n,h);
             else
-                return buscar(nodo->getDerecha(), n);
+                return buscar(nodo->getDerecha(), n,h);
         }
         
 
 };
 int main() {
     ArbolAVL arbolito;
-    arbolito.insertarR(50);
+    arbolito.insertarR("12/05/2023","14:30");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(30);
+    arbolito.insertarR("05/03/2022","09:15");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(70);
+    arbolito.insertarR("20/11/2024","18:45");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(21);
+    arbolito.insertarR("01/01/2021","08:00");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(47);
+    arbolito.insertarR("15/07/2023","12:00");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(90);
+    arbolito.insertarR("30/09/2022","16:20");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(100);
+    arbolito.insertarR("25/12/2023","10:10");
     arbolito.preorderR(); cout << endl;
-    arbolito.insertarR(60);
-    arbolito.insertarR(55);
+    arbolito.insertarR("04/04/2024","11:11");
+    arbolito.insertarR("12/05/2023","14:30"); // Fecha y hora ya ocupada
+    arbolito.insertarR("12/05/2023","15:30");
     arbolito.preorderR(); cout << endl;
     return 0;
 }
