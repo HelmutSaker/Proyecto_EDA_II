@@ -1,21 +1,22 @@
+#ifndef HASH_H
+#define HASH_H
+
 #include <iostream>
 #include "Paciente.h"
 using namespace std;
 
-class Hash{
-private:
+class Hash {
+public:
     Paciente* tabla;
     bool* ocupado;
     int SIZE = 10;
     int numElementos;
 
-public:
     Hash() {
         tabla = new Paciente[SIZE];
         ocupado = new bool[SIZE];
         for (int i = 0; i < SIZE; i++)
             ocupado[i] = false;
-
         numElementos = 0;
     }
 
@@ -45,30 +46,30 @@ public:
         numElementos++;
     }
 
-    void search(int id){
+    void buscarPaciente(int id){
         int pos = hashFunction(id);
         int temp = pos;
 
         while (ocupado[pos]){
             if (tabla[pos].idPaciente == id){
                 cout << "Paciente encontrado:\n";
-                cout << pos << " --> ID: " << tabla[pos].idPaciente << " | Nombre: " << tabla[pos].nombre << " | Urgencia: " << tabla[pos].nivelUrg << endl;
+                cout << pos << " --> ID: " << tabla[pos].idPaciente << " | Nombre: " << tabla[pos].nombre << " | Urgencia: " << tabla[pos].nivelUrgencia << endl;
                 return;
             }
             pos = (pos + 1) % SIZE;
             if (pos == temp) break;
         }
         cout << "Paciente no encontrado" << endl; 
-        
     }
+
     void print(){
         for(int i=0;i<SIZE;i++)
             if (ocupado[i]){
-                cout << i << " --> ID: " << tabla[i].idPaciente << " | Nombre: " << tabla[i].nombre << " | Urgencia: " << tabla[i].nivelUrg << endl;
+                cout << i << " --> ID: " << tabla[i].idPaciente << " | Nombre: " << tabla[i].nombre << " | Urgencia: " << tabla[i].nivelUrgencia << endl;
             } else {
                 cout << i << " --> " << endl;
             }
     }
-
 };
 
+#endif

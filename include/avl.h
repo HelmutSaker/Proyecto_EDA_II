@@ -1,28 +1,42 @@
+#ifndef AVL_H
+#define AVL_H
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "Paciente.h"
 using namespace std;
+
 class Node{
     private:
+        int id;
         vector<int> fecha;
         vector<int> horaI;
+        Paciente* paciente;
         int altura;
         Node * izquierda;
         Node * derecha;
     public:
-        Node(string n,string h){
+        Node(int id, Paciente* p, string n, string h){ 
+            this->id = id;
+            this->paciente = p;
             altura = 1;
             izquierda = nullptr;
             derecha = nullptr;
             setFecha(n);
-            setHoraS(h);   
+            setHoraS(h); 
         }
+        int getId() { return id; }
+        Paciente* getPaciente() { return paciente; }
         vector<int> getFecha() { return fecha; }
         vector<int> getHoraS() { return horaI; }
         int getAltura() { return altura; }
         Node* getIzquierda() { return izquierda; }
         Node* getDerecha() { return derecha; }
-    
+        void setId(int valor) { id = valor; }
+        void setPaciente(Paciente* p) { paciente = p; } 
+        void setAltura(int valor) { altura = valor; }
+        void setIzquierda(Node* nodo) { izquierda = nodo; }
+        void setDerecha(Node* nodo) { derecha = nodo; }
         void setFecha(string valor) {
             vector<int> fechaInt;
             stringstream ss(valor);
@@ -62,11 +76,22 @@ class Node{
         void setDerecha(Node* nodo) { derecha = nodo; }
 };
 
-class ArbolAVL{
+class AVL{
     private:
         Node* raiz;
+        
+        void ordenarPacientes(Node* nodo) {
+            if(nodo != nullptr){
+                ordenarPacientes(nodo->getIzquierda());
+                Paciente* p = nodo->getPaciente();
+                cout << "ID: " << p->idPaciente << ", Nombre: " << p->nombre 
+                     << ", Cita: " << p->fechaCita << endl;
+                ordenarPacientes(nodo->getDerecha());
+            }
+        }
+        
     public:
-        ArbolAVL(){
+        AVL(){
             raiz = nullptr;
         }
         
@@ -75,10 +100,6 @@ class ArbolAVL{
         }
         
         int factorBalance(Node *nodo) {
-            /*if (nodo != nullptr)
-                return altura(nodo->getIzquierda()) - altura(nodo->getDerecha());
-            else
-                return 0;*/
             return nodo ? altura(nodo->getIzquierda()) - altura(nodo->getDerecha()) : 0;
         }
         
@@ -87,12 +108,12 @@ class ArbolAVL{
             nodo->setAltura(alt);
         }
         
-        void insertarR(string n,string h) {
-            insertar(raiz, n,h);
+        void insertarPaciente(int id, Paciente* paciente, string n, string h) {
+            insertar(raiz, id, paciente, n,h);
         }
         
         Node * rotacionIzquierda(Node *actualRaiz) {
-            Node *nuevaRaiz = actualRaiz->getDerecha();;
+            Node *nuevaRaiz = actualRaiz->getDerecha();
             Node *subArbol = nuevaRaiz->getIzquierda();
             
             nuevaRaiz->setIzquierda(actualRaiz);
@@ -105,7 +126,7 @@ class ArbolAVL{
         }
         
         Node * rotacionDerecha(Node *actualRaiz) {
-            Node *nuevaRaiz = actualRaiz->getIzquierda();;
+            Node *nuevaRaiz = actualRaiz->getIzquierda();
             Node *subArbol = nuevaRaiz->getDerecha();
             
             nuevaRaiz->setDerecha(actualRaiz);
@@ -116,6 +137,7 @@ class ArbolAVL{
             
             return nuevaRaiz;
         }
+
         vector<int> Fecha(string valor) {
         vector<int> fechaInt; stringstream ss(valor); string segment; 
             while (getline(ss, segment, '/')) { 
@@ -189,15 +211,15 @@ class ArbolAVL{
             }
             return false;
         }
-        void insertar(Node*& nodo, string n, string h) {
-            
-            if(nodo==nullptr){
-                nodo = new Node(n,h);
+        
+        void insertar(Node*& nodo, int id, Paciente* paciente, string n, string h){
+            if(nodo == nullptr){
+                nodo = new Node(id, paciente, n, h);
             }
-            else if (FechaIzquierda(Fecha(n), nodo->getFecha())) {
+            else if (FechaIzquierda(Fecha(n), nodo->getFecha())){
                 Node * tmp = nodo->getIzquierda();
-                insertar(tmp, n,h);
-                nodo->setIzquierda (tmp);
+                insertar(tmp, id, paciente, n, h);
+                nodo->setIzquierda(tmp);
             }
             else if(FechaIgual(Fecha(n), nodo->getFecha())){
                 if(HoraIgual(HoraS(h), nodo->getHoraS())){
@@ -205,53 +227,41 @@ class ArbolAVL{
                     return;
                 }else if(HoraIzquierda(HoraS(h), nodo->getHoraS())){
                     Node * tmp = nodo->getIzquierda();
-                    insertar(tmp, n,h);
+                    insertar(tmp, id, paciente, n, h);
                     nodo->setIzquierda (tmp);
                 }else{
                     Node * tmp = nodo->getDerecha();
-                    insertar(tmp, n,h);
+                    insertar(tmp, id, paciente, n, h);
                     nodo->setDerecha (tmp);
                 }
             }
             else{
                 Node * tmp = nodo->getDerecha();
-                insertar(tmp, n,h);
-                nodo->setDerecha (tmp);
+                insertar(tmp, id, paciente, n, h);
+                nodo->setDerecha(tmp);
             }
             
             actualizarAltura(nodo);
             int facBalance = factorBalance(nodo);
             
-            // der - der
-            if (facBalance < -1 && FechaDerecha(Fecha(n), nodo->getDerecha()->getFecha())) {
+            if (facBalance < -1 && id > nodo->getDerecha()->getId()) {
                 nodo = rotacionIzquierda(nodo);
             }
-            // izq - izq
-            if (facBalance > 1 && FechaIzquierda(Fecha(n), nodo->getIzquierda()->getFecha())) {
+            if (facBalance > 1 && id < nodo->getIzquierda()->getId()) {
                 nodo = rotacionDerecha(nodo);
             }
-            // izq - der
-            if (facBalance > 1 && FechaDerecha(Fecha(n), nodo->getIzquierda()->getFecha()) ) {
+            if (facBalance > 1 && id > nodo->getIzquierda()->getId() ) {
                 Node *tmp = rotacionIzquierda(nodo->getIzquierda());
                 nodo->setIzquierda(tmp);
                 nodo = rotacionDerecha(nodo);
             }
-            // der - izq
-            if (facBalance < -1 && FechaIzquierda(Fecha(n), nodo->getDerecha()->getFecha()) ) {
+            if (facBalance < -1 && id < nodo->getDerecha()->getId()) {
                 Node *tmp = rotacionDerecha(nodo->getDerecha());
                 nodo->setDerecha(tmp);
                 nodo = rotacionIzquierda(nodo);
             }
         }
-        
-        void inorderR(){
-            inorder(raiz);
-        }
-        
-        void preorderR() {
-            preorder(raiz);
-        }
-        
+
         void inorder(Node*nodo){
             if(nodo!=nullptr){
                 inorder(nodo->getIzquierda());
@@ -269,51 +279,61 @@ class ArbolAVL{
                 preorder(nodo->getDerecha());
             }
         }
-        
-        bool buscarR(string n,string h){
-            return buscar(raiz, n,h);
+
+        bool buscarnh(string n,string h){
+            return buscarNH(raiz, n,h);
         }
-        bool buscar(Node* nodo, string n,string h){
+
+        bool buscarNH(Node* nodo, string n,string h){
             if (nodo == nullptr) 
                 return false;
             if (FechaIgual(Fecha(n), nodo->getFecha())&&HoraIgual(HoraS(h), nodo->getHoraS()))
                 return true;
-            if(FechaIgual(Fecha(n), nodo->getFecha())&&!HoraIgual(HoraS(h), nodo->getHoraS())){
+            if (FechaIgual(Fecha(n), nodo->getFecha())&&!HoraIgual(HoraS(h), nodo->getHoraS())){
                 if(HoraIzquierda(HoraS(h), nodo->getHoraS()))
-                    return buscar(nodo->getIzquierda(), n,h);
+                    return buscarNH(nodo->getIzquierda(), n,h);
                 else
-                    return buscar(nodo->getDerecha(), n,h);
+                    return buscarNH(nodo->getDerecha(), n,h);
             }
             if (FechaIzquierda(Fecha(n), nodo->getFecha()))
-                return buscar(nodo->getIzquierda(), n,h);
+                return buscarNH(nodo->getIzquierda(), n,h);
             else
-                return buscar(nodo->getDerecha(), n,h);
+                return buscarNH(nodo->getDerecha(), n,h);
         }
         
-
+        
+        Paciente* buscarPaciente(int id) {
+            return buscarId(raiz, id);
+        }
+        
+        Paciente* buscarId(Node* nodo, int id){
+            if (nodo == nullptr) 
+                return nullptr;
+            if (id == nodo->getId()) 
+                return nodo->getPaciente();
+            if (id < nodo->getId())
+                return buscarId(nodo->getIzquierda(), id);
+            else
+                return buscarId(nodo->getDerecha(), id);
+        }
+        
+        void mostrarPacientes() {
+            cout << "=== CITAS PROGRAMADAS (Ordenadas por ID) ===" << endl;
+            if (raiz == nullptr) {
+                cout << "No hay citas programadas." << endl;
+            } else {
+                ordenarPacientes(raiz);
+            }
+        }
+        
+        void inorderR(){
+            inorder(raiz);
+        }
+        
+        void preorderR() {
+            preorder(raiz);
+        }
+        
 };
-int main() {
-    ArbolAVL arbolito;
-    arbolito.insertarR("12/05/2023","14:30");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("05/03/2022","09:15");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("20/11/2024","18:45");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("01/01/2021","08:00");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("15/07/2023","12:00");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("30/09/2022","16:20");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("25/12/2023","10:10");
-    arbolito.preorderR(); cout << endl;
-    arbolito.insertarR("04/04/2024","11:11");
-    arbolito.insertarR("12/05/2023","14:30"); 
-    arbolito.insertarR("12/05/2023","15:30");
-    arbolito.preorderR();cout << endl;
-    arbolito.inorderR(); cout << endl;
-    arbolito.buscarR("15/07/2023","12:00") ? cout << "Encontrado\n" : cout << "No encontrado\n";
-    arbolito.buscarR("31/12/2022","23:59") ? cout << "Encontrado\n" : cout << "No encontrado\n";
-    return 0;
-}
+
+#endif
