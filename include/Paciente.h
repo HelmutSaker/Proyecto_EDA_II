@@ -3,27 +3,14 @@
 class Paciente {
 public:
     int idPaciente;
-    char nombre[100];  
+    string nombre;
     int nivelUrgencia;
-    char fechaCita[50];
+    string fecha;
+    string hora;
     
-    Paciente(int id = 0, const char* nom = "", int nivel = 0, const char* fecha = "") {
+    Paciente(int id = 0, string nom = "", int nivel = 0, string n = "", string h = "") {
         idPaciente = id;
+        nombre = nom;
         nivelUrgencia = nivel;
-        
-
-        int i = 0;
-        while(nom[i] != '\0' && i < 99) {
-            nombre[i] = nom[i];
-            i++;
-        }
-        nombre[i] = '\0';
-        
-        i = 0;
-        while(fecha[i] != '\0' && i < 49) {
-            fechaCita[i] = fecha[i];
-            i++;
-        }
-        fechaCita[i] = '\0';
     }
 };
