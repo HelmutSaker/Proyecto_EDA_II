@@ -1,5 +1,4 @@
-#ifndef AVL_H
-#define AVL_H
+#pragma once
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -71,9 +70,6 @@ class Node{
             }
             horaI = horaInt;
         }
-        void setAltura(int valor) { altura = valor; }
-        void setIzquierda(Node* nodo) { izquierda = nodo; }
-        void setDerecha(Node* nodo) { derecha = nodo; }
 };
 
 class AVL{
@@ -335,5 +331,3 @@ class AVL{
         }
         
 };
-
-#endif

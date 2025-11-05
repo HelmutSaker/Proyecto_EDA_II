@@ -1,5 +1,4 @@
-#ifndef HASH_H
-#define HASH_H
+#pragma once
 
 #include <iostream>
 #include "Paciente.h"
@@ -71,5 +70,3 @@ public:
             }
     }
 };
-
-#endif

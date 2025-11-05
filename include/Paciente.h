@@ -1,6 +1,4 @@
-#ifndef PACIENTE_H
-#define PACIENTE_H
-
+#pragma once
 
 class Paciente {
 public:
@@ -29,5 +27,3 @@ public:
         fechaCita[i] = '\0';
     }
 };
-
-#endif

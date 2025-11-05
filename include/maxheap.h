@@ -1,5 +1,4 @@
-#ifndef HEAPS_H
-#define HEAPS_H
+#pragma once
 
 #include <iostream>
 #include "Paciente.h"
@@ -17,6 +16,9 @@ public:
         arr = new Paciente[N+1];
         last = 0;
     }
+
+    int getSize()
+    {return last;}
 
     void insert(Paciente p){
         if(last+1 >= N){
@@ -62,5 +64,3 @@ public:
         cout<<endl;
     }
 };
-
-#endif

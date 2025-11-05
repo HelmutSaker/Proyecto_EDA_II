@@ -1,16 +1,15 @@
-#ifndef SISTEMATRIAGE_H
-#define SISTEMATRIAGE_H
+#pragma once
 
 #include "hash.h"
 #include "AVL.h"           
-#include "heaps.h"          
+#include "maxheap.h"          
 #include "Paciente.h"
 
 class SistemaTriage {
 private:
     Hash tablaHash;
     AVL arbolCitas;
-    heaps minHeap;
+    MaxHeap maxHeap;
     const char* generarFechaCita();
     
 public:
@@ -22,5 +21,3 @@ public:
     void mostrarCitas();
 
 };
-
-#endif
