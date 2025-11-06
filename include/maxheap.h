@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include "Paciente.h"
 using namespace std;
@@ -15,6 +17,9 @@ public:
         last = 0;
     }
 
+    int getSize()
+    {return last;}
+
     void insert(Paciente p){
         if(last+1 >= N){
             cout<<"El heap esta lleno"<<endl;
@@ -24,7 +29,7 @@ public:
         arr[last]=p;
 
         int i=last;
-        while(i>1 && arr[i].nivelUrg > arr[i/2].nivelUrg){
+        while(i>1 && arr[i].nivelUrgencia > arr[i/2].nivelUrgencia){
             swap(arr[i],arr[i/2]);
             i=i/2;
         }
@@ -42,9 +47,9 @@ public:
         
         while(i*2 <= last){
             int olderSon = i*2;
-            if (2*i + 1 <= last && arr[2*i + 1].nivelUrg > arr[2*i].nivelUrg)
+            if (2*i + 1 <= last && arr[2*i + 1].nivelUrgencia > arr[2*i].nivelUrgencia)
                 olderSon = 2*i + 1;
-            if (arr[i].nivelUrg < arr[olderSon].nivelUrg){
+            if (arr[i].nivelUrgencia < arr[olderSon].nivelUrgencia){
                 swap(arr[i], arr[olderSon]);
                 i = olderSon;
             }
@@ -55,8 +60,7 @@ public:
 
     void print(){
         for(int i=1;i<=last;i++)
-            cout<< arr[i].idPaciente << " | " << arr[i].nombre << " | " << "Urgencia: " << arr[i].nivelUrg << "\n";
+            cout<< arr[i].idPaciente << " | " << arr[i].nombre << " | " << "Urgencia: " << arr[i].nivelUrgencia << "\n";
         cout<<endl;
     }
 };
-
