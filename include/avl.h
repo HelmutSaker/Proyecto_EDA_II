@@ -17,6 +17,8 @@ class Node{
             altura = 1;
             izquierda = nullptr;
             derecha = nullptr;
+            fecha.clear();
+            horaI.clear();
             setFecha(n);
             setHoraS(h);
             horaS = h;
@@ -35,8 +37,10 @@ class Node{
             stringstream ss(valor);
             string segment;
             while (getline(ss, segment, '/')) {
+                if(segment.empty()) return;
                 fechaInt.push_back(stoi(segment));
             }
+            if(fechaInt.size() != 3) return;
             if(fechaInt[1]>12||fechaInt[1]<0){
                 cout<<"Mes invalido"<<endl;
                 return;
@@ -46,14 +50,17 @@ class Node{
                 return;
             }
             fecha = fechaInt;
+            fechaS = valor;
         }
         void setHoraS(string valor) { 
             vector<int> horaInt;
             stringstream ss(valor);
             string segment;
             while (getline(ss, segment, ':')) {
+                if(segment.empty()) return;
                 horaInt.push_back(stoi(segment));
             }
+            if(horaInt.size() != 2) return;
             if(horaInt[0]>23||horaInt[0]<0){
                 cout<<"Hora invalida"<<endl;
                 return;
@@ -82,14 +89,11 @@ class ArbolAVL{
         }
         
         int factorBalance(Node *nodo) {
-            /*if (nodo != nullptr)
-                return altura(nodo->getIzquierda()) - altura(nodo->getDerecha());
-            else
-                return 0;*/
             return nodo ? altura(nodo->getIzquierda()) - altura(nodo->getDerecha()) : 0;
         }
         
         void actualizarAltura(Node *nodo) {
+            if(!nodo) return;
             int alt = 1 + max(altura(nodo->getIzquierda()), altura(nodo->getDerecha()));
             nodo->setAltura(alt);
         }
@@ -99,7 +103,9 @@ class ArbolAVL{
         }
         
         Node * rotacionIzquierda(Node *actualRaiz) {
-            Node *nuevaRaiz = actualRaiz->getDerecha();;
+            if(!actualRaiz) return nullptr;
+            Node *nuevaRaiz = actualRaiz->getDerecha();
+            if(!nuevaRaiz) return actualRaiz;
             Node *subArbol = nuevaRaiz->getIzquierda();
             
             nuevaRaiz->setIzquierda(actualRaiz);
@@ -112,7 +118,9 @@ class ArbolAVL{
         }
         
         Node * rotacionDerecha(Node *actualRaiz) {
-            Node *nuevaRaiz = actualRaiz->getIzquierda();;
+            if(!actualRaiz) return nullptr;
+            Node *nuevaRaiz = actualRaiz->getIzquierda();
+            if(!nuevaRaiz) return actualRaiz;
             Node *subArbol = nuevaRaiz->getDerecha();
             
             nuevaRaiz->setDerecha(actualRaiz);
@@ -124,10 +132,11 @@ class ArbolAVL{
             return nuevaRaiz;
         }
         vector<int> Fecha(string valor) {
-        vector<int> fechaInt; stringstream ss(valor); string segment; 
+            vector<int> fechaInt; stringstream ss(valor); string segment; 
             while (getline(ss, segment, '/')) { 
-            if(segment.empty()) return {};
-            fechaInt.push_back(stoi(segment)); }
+                if(segment.empty()) return {};
+                fechaInt.push_back(stoi(segment)); 
+            }
             if(fechaInt.size() != 3) return {}; 
             if(fechaInt[1]>12||fechaInt[1]<0){ 
                 cout<<"Mes invalido"<<endl; 
@@ -136,7 +145,8 @@ class ArbolAVL{
             if(fechaInt[0]>31||fechaInt[0]<0){ 
                 cout<<"Dia invalido"<<endl; 
                 return {}; 
-            } return fechaInt; }
+            } return fechaInt; 
+        }
         vector<int> HoraS(string valor) { 
             vector<int> horaInt;
             stringstream ss(valor);
@@ -157,6 +167,7 @@ class ArbolAVL{
             return horaInt;
         }
         bool FechaIzquierda(vector<int> f1, vector<int> f2){
+            if(f1.size()!=3 || f2.size()!=3) return false;
             if(f1[2]< f2[2] ||
                (f1[2]== f2[2] && f1[1]< f2[1]) ||
                (f1[2]== f2[2] && f1[1]== f2[1] && f1[0]< f2[0]) ){
@@ -165,6 +176,7 @@ class ArbolAVL{
             return false;
         }
         bool FechaDerecha(vector<int> f1, vector<int> f2){
+            if(f1.size()!=3 || f2.size()!=3) return false;
             if(f1[2]> f2[2] ||
                (f1[2]== f2[2] && f1[1]> f2[1]) ||
                (f1[2]== f2[2] && f1[1]== f2[1] && f1[0]> f2[0]) ){
@@ -173,12 +185,14 @@ class ArbolAVL{
             return false;
         }
         bool FechaIgual(vector<int> f1, vector<int> f2){
+            if(f1.size()!=3 || f2.size()!=3) return false;
             if(f1[2]== f2[2] && f1[1]== f2[1] && f1[0]== f2[0]){
                 return true;
             }
             return false;
         }
         bool HoraIzquierda(vector<int> f1, vector<int> f2){
+            if(f1.size()!=2 || f2.size()!=2) return false;
             if(f1[1]< f2[1] ||
                (f1[1]== f2[1] && f1[0]< f2[0])){
                 return true;
@@ -186,6 +200,7 @@ class ArbolAVL{
             return false;
         }
         bool HoraDerecha(vector<int> f1, vector<int> f2){
+            if(f1.size()!=2 || f2.size()!=2) return false;
             if(f1[1]> f2[1] ||
                (f1[1]== f2[1] && f1[0]> f2[0]) ){
                 return true;
@@ -193,26 +208,29 @@ class ArbolAVL{
             return false;
         }
         bool HoraIgual(vector<int> f1, vector<int> f2){
+            if(f1.size()!=2 || f2.size()!=2) return false;
             if(f1[1]== f2[1] && f1[0]== f2[0]){
                 return true;
             }
             return false;
         }
         void insertar(Node*& nodo, string n, string h) {
-            
+            vector<int> fechaN = Fecha(n);
+            vector<int> horaN = HoraS(h);
+            if (fechaN.empty() || horaN.empty()) return;
             if(nodo==nullptr){
                 nodo = new Node(n,h);
             }
-            else if (FechaIzquierda(Fecha(n), nodo->getFecha())) {
+            else if (FechaIzquierda(fechaN, nodo->getFecha())) {
                 Node * tmp = nodo->getIzquierda();
                 insertar(tmp, n,h);
                 nodo->setIzquierda (tmp);
             }
-            else if(FechaIgual(Fecha(n), nodo->getFecha())){
-                if(HoraIgual(HoraS(h), nodo->getHoraS())){
+            else if(FechaIgual(fechaN, nodo->getFecha())){
+                if(HoraIgual(horaN, nodo->getHoraS())){
                     cout<<"Fecha y hora ya ocupada"<<endl;
                     return;
-                }else if(HoraIzquierda(HoraS(h), nodo->getHoraS())){
+                }else if(HoraIzquierda(horaN, nodo->getHoraS())){
                     Node * tmp = nodo->getIzquierda();
                     insertar(tmp, n,h);
                     nodo->setIzquierda (tmp);
@@ -232,21 +250,21 @@ class ArbolAVL{
             int facBalance = factorBalance(nodo);
             
             // der - der
-            if (facBalance < -1 && nodo->getDerecha() && FechaDerecha(Fecha(n), nodo->getDerecha()->getFecha())) {
+            if (facBalance < -1 && nodo->getDerecha() && (FechaDerecha(fechaN, nodo->getDerecha()->getFecha())||(FechaIgual(fechaN, nodo->getDerecha()->getFecha())&&HoraDerecha(horaN, nodo->getDerecha()->getHoraS())))) {
                 nodo = rotacionIzquierda(nodo);
             }
             // izq - izq
-            if (facBalance > 1 && nodo->getIzquierda()&& FechaIzquierda(Fecha(n), nodo->getIzquierda()->getFecha())) {
+            if (facBalance > 1 && nodo->getIzquierda()&& (FechaIzquierda(fechaN, nodo->getIzquierda()->getFecha())||(FechaIgual(fechaN, nodo->getIzquierda()->getFecha())&&HoraIzquierda(horaN, nodo->getIzquierda()->getHoraS()))) ) {
                 nodo = rotacionDerecha(nodo);
             }
             // izq - der
-            if (facBalance > 1 && nodo->getDerecha()&& FechaDerecha(Fecha(n), nodo->getIzquierda()->getFecha()) ) {
+            if (facBalance > 1 && nodo->getIzquierda()&& (FechaDerecha(fechaN, nodo->getIzquierda()->getFecha())||(FechaIgual(fechaN, nodo->getIzquierda()->getFecha())&&HoraDerecha(horaN, nodo->getIzquierda()->getHoraS())) )) {
                 Node *tmp = rotacionIzquierda(nodo->getIzquierda());
                 nodo->setIzquierda(tmp);
                 nodo = rotacionDerecha(nodo);
             }
             // der - izq
-            if (facBalance < -1 && nodo->getIzquierda()&& FechaIzquierda(Fecha(n), nodo->getDerecha()->getFecha()) ) {
+            if (facBalance < -1 && nodo->getDerecha()&& (FechaIzquierda(fechaN, nodo->getDerecha()->getFecha())||(FechaIgual(fechaN, nodo->getDerecha()->getFecha())&&HoraIzquierda(horaN, nodo->getDerecha()->getHoraS())) )) {
                 Node *tmp = rotacionDerecha(nodo->getDerecha());
                 nodo->setDerecha(tmp);
                 nodo = rotacionIzquierda(nodo);
@@ -284,20 +302,23 @@ class ArbolAVL{
         {
             if (nodo == nullptr) 
                 return false;
-            if (FechaIgual(Fecha(n), nodo->getFecha())&&HoraIgual(HoraS(h), nodo->getHoraS()))
+            vector<int> fechaN = Fecha(n);
+            vector<int> horaN = HoraS(h);
+            if (FechaIgual(fechaN, nodo->getFecha())&&HoraIgual(horaN, nodo->getHoraS()))
                 return true;
-            if(FechaIgual(Fecha(n), nodo->getFecha())&&!HoraIgual(HoraS(h), nodo->getHoraS())){
-                if(HoraIzquierda(HoraS(h), nodo->getHoraS()))
+            if(FechaIgual(fechaN, nodo->getFecha())&&!HoraIgual(horaN, nodo->getHoraS())){
+                if(HoraIzquierda(horaN, nodo->getHoraS()))
                     return buscar(nodo->getIzquierda(), n,h);
                 else
                     return buscar(nodo->getDerecha(), n,h);
             }
-            if (FechaIzquierda(Fecha(n), nodo->getFecha()))
+            if (FechaIzquierda(fechaN, nodo->getFecha()))
                 return buscar(nodo->getIzquierda(), n,h);
             else
                 return buscar(nodo->getDerecha(), n,h);
         }
         Node* minValueNode(Node* nodo) {
+            if(!nodo) return nullptr;
             Node* tmp = nodo;
             while (tmp->getIzquierda() != nullptr) tmp = tmp->getIzquierda();
             return tmp;
@@ -324,26 +345,27 @@ class ArbolAVL{
                     Node*tmp=node->getDerecha();
                     node->setDerecha(eliminar(tmp, n, h));
                 }
-                if (node->getIzquierda() == nullptr || node->getDerecha() == nullptr) {
-                    Node* temp = node->getIzquierda() ? node->getIzquierda() : node->getDerecha();
-                    if (temp == nullptr) {
-                        delete node;
-                        return nullptr;
+                else {
+                    if (node->getIzquierda() == nullptr || node->getDerecha() == nullptr) {
+                        Node* temp = node->getIzquierda() ? node->getIzquierda() : node->getDerecha();
+                        if (temp == nullptr) {
+                            delete node;
+                            return nullptr;
+                        } else {
+                            Node* ret = temp;
+                            delete node;
+                            return ret;
+                        }
                     } else {
-                        Node* ret = temp;
-                        delete temp;
-                        return ret;
+                        Node* temp = minValueNode(node->getDerecha());
+                        node->setFecha(temp->getFechaString());
+                        node->setHoraS(temp->getHoraString());
+                        node->setDerecha(eliminar(node->getDerecha(),temp->getFechaString() , temp->getHoraString()));
                     }
-                } else {
-                    Node* temp = minValueNode(node->getDerecha());
-                    node->setFecha(n);
-                    node->setHoraS(h);
-                    node->setDerecha(eliminar(node->getDerecha(), n, h));
                 }
             }
-
+            if(node == nullptr) return node;
             actualizarAltura(node);
-
             int facBalance = factorBalance(node);
 
             if (facBalance > 1 && node->getIzquierda() && factorBalance(node->getIzquierda()) >= 0)
@@ -366,7 +388,7 @@ class ArbolAVL{
                 cout << "No se encontró la cita " << n << " " << h << endl;
             }else{
                 cout << "Cita eliminada: " << n << " " << h << endl;
-                eliminar(raiz, n, h);
+                raiz=eliminar(raiz, n, h);
             }
         }
         void editarR(string fechaV, string horaV, string fechaN, string horaN){
