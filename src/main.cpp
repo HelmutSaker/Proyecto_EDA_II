@@ -2,9 +2,10 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "Paciente.h"
-#include "hash.h"
-#include "maxheap.h"
+#include "../include/Paciente.h"
+#include "../include/hash.h"
+#include "../include/maxheap.h"
+#include "../include/avl.h"
 using namespace std;
 
 class SistemaTriage {
@@ -41,7 +42,7 @@ public:
     }
 
     // Cargar pacientes desde archivo
-    void cargarDesdeArchivo(string nombreArchivo) {
+    void cargarDesdeArchivo(string nombreArchivo, ArbolAVL& arbolCitas) {
         ifstream archivo(nombreArchivo);
         if (!archivo.is_open()) {
             cout << "Error: No se pudo abrir el archivo " << nombreArchivo << endl;
@@ -54,8 +55,9 @@ public:
         while (getline(archivo, linea)) {
             stringstream ss(linea);
             string idStr, nombre, urgenciaStr;
+            string fecha, hora;
             
-            if (getline(ss, idStr, ',') && getline(ss, nombre, ',') && getline(ss, urgenciaStr)) {
+            if (getline(ss, idStr, ',') && getline(ss, nombre, ',') && getline(ss, urgenciaStr,',')&& getline(ss, fecha, ',') && getline(ss, hora)) {
                 try {
                     int id = stoi(idStr);
                     int urgencia = stoi(urgenciaStr);
@@ -63,6 +65,7 @@ public:
                     if (urgencia >= 1 && urgencia <= 5) {
                         registrarPaciente(id, nombre, urgencia);
                         contador++;
+                        arbolCitas.insertarR(fecha, hora);
                     }
                 } catch (const exception& e) {
                     cout << "Error en linea: " << linea << endl;
@@ -122,7 +125,7 @@ public:
 int main() {
     SistemaTriage sistema;
     int accion = 0;
-
+    ArbolAVL arbolCitas;
     while (true) {
         cout << "\n=== SISTEMA DE TRIAGE HOSPITALARIO ===" << endl;
         cout << "Seleccione la accion a realizar (1-6): " << endl;
@@ -150,7 +153,7 @@ int main() {
                 string nombreArchivo;
                 cout << "Ingrese el nombre del archivo: ";
                 cin >> nombreArchivo;
-                sistema.cargarDesdeArchivo(nombreArchivo);
+                sistema.cargarDesdeArchivo(nombreArchivo,arbolCitas);
             } else if (decision == 2) {
                 int id, nUrg;
                 string nombre;
@@ -167,6 +170,37 @@ int main() {
         else if (accion == 2) {
             cout << "\n=== ATENCION DE PACIENTES ===" << endl;
             sistema.atenderSiguiente();
+        }
+        else if (accion == 3) {
+            cout << "\n=== ASIGNAR CITA ===" << endl;
+            string n, h;
+            cout << "Ingrese fecha (DD/MM/AAAA): ";
+            cin >> n;
+            cout << "Ingrese hora (HH:MM): ";
+            cin >> h;
+            arbolCitas.insertarR(n,h);
+        }
+        else if (accion == 4) {
+            cout << "\n=== CANCELAR CITA ===" << endl;
+            string n, h;
+            cout << "Ingrese fecha (DD/MM/AAAA): ";
+            cin >> n;
+            cout << "Ingrese hora (HH:MM): ";
+            cin >> h;
+            arbolCitas.eliminarR(n,h);
+        }
+        else if (accion == 5) {
+            cout << "\n=== REPROGRAMAR CITA ===" << endl;
+            string fechaV, horaV, fechaN, horaN;
+            cout << "Ingrese fecha actual (DD/MM/AAAA): ";
+            cin >> fechaV;
+            cout << "Ingrese hora actual (HH:MM): ";
+            cin >> horaV;
+            cout << "Ingrese nueva fecha (DD/MM/AAAA): ";
+            cin >> fechaN;
+            cout << "Ingrese nueva hora (HH:MM): ";
+            cin >> horaN;
+            arbolCitas.editarR(fechaV, horaV, fechaN, horaN);
         }
         else if (accion == 6) {
             int id;
