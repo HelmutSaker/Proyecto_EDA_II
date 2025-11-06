@@ -9,10 +9,16 @@ public:
     int nivelUrgencia;
     string fecha;
     string hora;
+    bool atendido;
+    bool conCita;
     
-    Paciente(int id = 0, string nom = "", int nivel = 0, string n = "", string h = "") {
+    Paciente(int id = 0, string nom = "", int nivel = 0, string f = "", string h = "") {
         idPaciente = id;
         nombre = nom;
         nivelUrgencia = nivel;
+        fecha = f;
+        hora = h;
+        atendido = false;
+        conCita = false;
     }
 };

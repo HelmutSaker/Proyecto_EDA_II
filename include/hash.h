@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include "Paciente.h"
 using namespace std;
@@ -8,10 +7,11 @@ class Hash {
 public:
     Paciente* tabla;
     bool* ocupado;
-    int SIZE = 10;
+    int SIZE;
     int numElementos;
 
-    Hash() {
+    Hash(int size = 10007) {  // Tamaño primo para mejor distribución
+        SIZE = size;
         tabla = new Paciente[SIZE];
         ocupado = new bool[SIZE];
         for (int i = 0; i < SIZE; i++)
@@ -29,10 +29,20 @@ public:
     }
 
     void insert(Paciente p){
+        if (numElementos >= SIZE) {
+            cout << "Tabla hash llena" << endl;
+            return;
+        }
+        
         int index = hashFunction(p.idPaciente);
         int temp = index;
 
         while(ocupado[index]){
+            // Si el paciente ya existe, actualizamos
+            if (tabla[index].idPaciente == p.idPaciente){
+                tabla[index] = p;
+                return;
+            }
             index = (index + 1) % SIZE;
             if (index == temp){
                 cout << "Tabla llena" << endl;
@@ -45,28 +55,48 @@ public:
         numElementos++;
     }
 
-    void buscarPaciente(int id){
+    Paciente* buscarPaciente(int id){
         int pos = hashFunction(id);
         int temp = pos;
 
         while (ocupado[pos]){
             if (tabla[pos].idPaciente == id){
-                cout << "Paciente encontrado:\n";
-                cout << pos << " --> ID: " << tabla[pos].idPaciente << " | Nombre: " << tabla[pos].nombre << " | Urgencia: " << tabla[pos].nivelUrgencia << endl;
-                return;
+                return &tabla[pos];
             }
             pos = (pos + 1) % SIZE;
             if (pos == temp) break;
         }
-        cout << "Paciente no encontrado" << endl; 
+        return nullptr; 
+    }
+
+    void mostrarPaciente(int id){
+        Paciente* p = buscarPaciente(id);
+        if (p != nullptr){
+            cout << "Paciente encontrado:\n";
+            cout << "ID: " << p->idPaciente << " | Nombre: " << p->nombre 
+                 << " | Urgencia: " << p->nivelUrgencia << endl;
+            
+            // Mostrar estado
+            string estado = "En espera";
+            if (p->atendido) estado = "Atendido";
+            if (p->conCita) estado += " con cita programada";
+            
+            cout << "Estado: " << estado << endl;
+        } else {
+            cout << "Paciente no encontrado" << endl;
+        }
     }
 
     void print(){
-        for(int i=0;i<SIZE;i++)
+        int count = 0;
+        for(int i = 0; i < SIZE && count < numElementos; i++){
             if (ocupado[i]){
-                cout << i << " --> ID: " << tabla[i].idPaciente << " | Nombre: " << tabla[i].nombre << " | Urgencia: " << tabla[i].nivelUrgencia << endl;
-            } else {
-                cout << i << " --> " << endl;
+                cout << i << " --> ID: " << tabla[i].idPaciente 
+                     << " | Nombre: " << tabla[i].nombre 
+                     << " | Urgencia: " << tabla[i].nivelUrgencia << endl;
+                count++;
             }
+        }
+        cout << "Total pacientes: " << numElementos << endl;
     }
 };
