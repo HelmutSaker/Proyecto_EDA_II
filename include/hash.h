@@ -34,12 +34,12 @@ public:
             return;
         }
         
-        int index = hashFunction(p.idPaciente);
+        int index = hashFunction(p.getId());
         int temp = index;
 
         while(ocupado[index]){
             // Si el paciente ya existe, actualizamos
-            if (tabla[index].idPaciente == p.idPaciente){
+            if (tabla[index].getId() == p.getId()){
                 tabla[index] = p;
                 return;
             }
@@ -60,7 +60,7 @@ public:
         int temp = pos;
 
         while (ocupado[pos]){
-            if (tabla[pos].idPaciente == id){
+            if (tabla[pos].getId() == id){
                 return &tabla[pos];
             }
             pos = (pos + 1) % SIZE;
@@ -73,13 +73,13 @@ public:
         Paciente* p = buscarPaciente(id);
         if (p != nullptr){
             cout << "Paciente encontrado:\n";
-            cout << "ID: " << p->idPaciente << " | Nombre: " << p->nombre 
-                 << " | Urgencia: " << p->nivelUrgencia << endl;
+            cout << "ID: " << p->getId() << " | Nombre: " << p->getNombre()
+                 << " | Urgencia: " << p->getUrgencia() << endl;
             
             // Mostrar estado
             string estado = "En espera";
-            if (p->atendido) estado = "Atendido";
-            if (p->conCita) estado += " con cita programada";
+            if (p->getAtendido()) estado = "Atendido";
+            if (p->getConCita()) estado = " con cita programada";
             
             cout << "Estado: " << estado << endl;
         } else {
@@ -91,9 +91,9 @@ public:
         int count = 0;
         for(int i = 0; i < SIZE && count < numElementos; i++){
             if (ocupado[i]){
-                cout << i << " --> ID: " << tabla[i].idPaciente 
-                     << " | Nombre: " << tabla[i].nombre 
-                     << " | Urgencia: " << tabla[i].nivelUrgencia << endl;
+                cout << i << " --> ID: " << tabla[i].getId()
+                     << " | Nombre: " << tabla[i].getNombre()
+                     << " | Urgencia: " << tabla[i].getUrgencia() << endl;
                 count++;
             }
         }

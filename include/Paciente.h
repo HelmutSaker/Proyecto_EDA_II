@@ -27,4 +27,7 @@ public:
     int getUrgencia(){return nivelUrgencia;}
     string getFecha(){return fecha;}
     string getHora(){return hora;}
+    string getNombre(){return nombre;}
+    bool getAtendido(){return atendido;}
+    bool getConCita(){return conCita;}
 };
