@@ -3,7 +3,7 @@
 using namespace std;
 
 class Paciente {
-public:
+private:
     int idPaciente;
     string nombre;
     int nivelUrgencia;
@@ -11,7 +11,8 @@ public:
     string hora;
     bool atendido;
     bool conCita;
-    
+
+public:    
     Paciente(int id = 0, string nom = "", int nivel = 0, string f = "", string h = "") {
         idPaciente = id;
         nombre = nom;
