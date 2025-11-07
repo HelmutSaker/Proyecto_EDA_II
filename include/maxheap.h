@@ -1,26 +1,30 @@
 #pragma once
 
 #include <iostream>
+#include <tuple>
 #include "Paciente.h"
+#include "hash.h"
+
 using namespace std;
 
 class MaxHeap{
 private:
-    Paciente * arr;
+    int* arr;
     int N;
     int last;
+    int urgencia;
 
 public:
     MaxHeap(int n){
         N=n;
-        arr = new Paciente[N+1];
+        arr = new int[N+1];
         last = 0;
     }
 
     int getSize()
     {return last;}
 
-    void insert(Paciente p){
+    void insert(){
         if(last+1 >= N){
             cout<<"El heap esta lleno"<<endl;
             return;
@@ -35,7 +39,7 @@ public:
         }
     }
 
-    Paciente extractMax(){
+    tuple<int,int> extractMax(){
         if (last==0){
             cout << "Heap Vacio" << endl;
             return {-1, "", -1};

@@ -10,7 +10,7 @@ public:
     int SIZE;
     int numElementos;
 
-    Hash(int size = 10007) {  // Tamaño primo para mejor distribución
+    Hash(int size = 10007) {
         SIZE = size;
         tabla = new Paciente[SIZE];
         ocupado = new bool[SIZE];
