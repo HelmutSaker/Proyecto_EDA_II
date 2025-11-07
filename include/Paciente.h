@@ -22,4 +22,9 @@ public:
         atendido = false;
         conCita = false;
     }
+
+    int getId(){return idPaciente;}
+    int getUrgencia(){return nivelUrgencia;}
+    string getFecha(){return fecha;}
+    string getHora(){return hora;}
 };
