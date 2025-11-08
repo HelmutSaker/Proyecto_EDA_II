@@ -79,7 +79,7 @@ public:
             // Mostrar estado
             string estado = "En espera";
             if (p->getAtendido()) estado = "Atendido";
-            if (p->getConCita()) estado = " con cita programada";
+            if (p->getConCita()) estado = " Con cita programada";
             
             cout << "Estado: " << estado << endl;
         } else {

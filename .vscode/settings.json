@@ -49,6 +49,8 @@
         "text_encoding": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp"
     }
 }
