@@ -38,7 +38,7 @@ public:
         int temp = index;
 
         while(ocupado[index]){
-            // Si el paciente ya existe, actualizamos
+            
             if (tabla[index].getId() == p.getId()){
                 tabla[index] = p;
                 return;
@@ -53,6 +53,13 @@ public:
         tabla[index] = p;
         ocupado[index] = true;
         numElementos++;
+
+    }
+
+    Paciente* buscarPorIndex(int index){
+        if (index >= 0 && index < SIZE && ocupado[index])
+            return &tabla[index];
+        return nullptr;
     }
 
     Paciente* buscarPaciente(int id){
@@ -76,7 +83,6 @@ public:
             cout << "ID: " << p->getId() << " | Nombre: " << p->getNombre()
                  << " | Urgencia: " << p->getUrgencia() << endl;
             
-            // Mostrar estado
             string estado = "En espera";
             if (p->getAtendido()) estado = "Atendido";
             if (p->getConCita()) estado = " Con cita programada";

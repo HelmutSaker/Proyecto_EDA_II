@@ -30,4 +30,8 @@ public:
     string getNombre(){return nombre;}
     bool getAtendido(){return atendido;}
     bool getConCita(){return conCita;}
+
+    void setAtendido(bool atendido){
+        this->atendido = atendido;
+    }
 };

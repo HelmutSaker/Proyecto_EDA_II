@@ -35,8 +35,11 @@ public:
         // Insertar en tabla hash
         tablaHash.insert(nuevoPaciente);
         
+        // Calcular indice hash
+        int index = tablaHash.hashFunction(id);
+
         // Insertar en max-heap
-        colaUrgencia->insert(nuevoPaciente);
+        colaUrgencia->insert(nuevoPaciente.getUrgencia(), index);
         
         cout << "Paciente registrado exitosamente!" << endl;
     }
@@ -85,19 +88,20 @@ public:
         }
 
         // Extraer el paciente más urgente del heap
-        Paciente pacienteAtendido = colaUrgencia->extractMax();
+        tuple<int, int> maxUrg = colaUrgencia->extractMax();
+        int urgencia = get<0>(maxUrg);
+        int indexHash = get<1>(maxUrg);
         
         // Buscar en la hash table para obtener datos completos
-        Paciente* pacienteHash = tablaHash.buscarPaciente(pacienteAtendido.idPaciente);
+        Paciente* pacienteHash = tablaHash.buscarPorIndex(indexHash);
         
         if (pacienteHash != nullptr) {
-            // Marcar como atendido
-            pacienteHash->atendido = true;
+            pacienteHash->setAtendido(true);
             
             cout << "\n=== PACIENTE ATENDIDO ===" << endl;
-            cout << "ID: " << pacienteHash->idPaciente << endl;
-            cout << "Nombre: " << pacienteHash->nombre << endl;
-            cout << "Nivel de urgencia: " << pacienteHash->nivelUrgencia << endl;
+            cout << "ID: " << pacienteHash->getId() << endl;
+            cout << "Nombre: " << pacienteHash->getNombre() << endl;
+            cout << "Nivel de urgencia: " << pacienteHash->getUrgencia() << endl;
             cout << "=========================" << endl;
         } else {
             cout << "Error: Paciente no encontrado en el sistema." << endl;
