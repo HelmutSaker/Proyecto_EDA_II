@@ -192,11 +192,15 @@ int main() {
             if (p == nullptr) {
                 cout << "Error: paciente con id " << n << " no encontrado en la tabla hash." << endl;
             } else {
-                arbolCitas.eliminarR(idx);
-                p->setConCita(false);
-                p->setFecha("");
-                p->setHora("");
-                cout << "Cita cancelada para el paciente ID " << n << endl;
+                if(!p->getConCita()){
+                    cout << "Error: el paciente con id " << n << " no tiene una cita programada." << endl;
+                }else{
+                    arbolCitas.eliminarR(idx);
+                    p->setConCita(false);
+                    p->setFecha("");
+                    p->setHora("");
+                    cout << "Cita cancelada para el paciente ID " << n << endl;
+                }
             }
         }
         else if (accion == 4) {
@@ -216,10 +220,14 @@ int main() {
             if (p == nullptr) {
                 cout << "Error: paciente con id " << n << " no encontrado en la tabla hash." << endl;
             } else {
-                arbolCitas.editarR(idx, fechaN, horaN);
-                p->setFecha(fechaN);
-                p->setHora(horaN);
-                cout << "Cita reprogramada para ID " << n << " a " << fechaN << " " << horaN << endl;
+                if(!p->getConCita()){
+                    cout << "Error: el paciente con id " << n << " no tiene una cita programada." << endl;
+                }else{
+                    arbolCitas.editarR(idx, fechaN, horaN);
+                    p->setFecha(fechaN);
+                    p->setHora(horaN);
+                    cout << "Cita reprogramada para ID " << n << " a " << fechaN << " " << horaN << endl;
+                }
             }
         }
         else if (accion == 5) {
