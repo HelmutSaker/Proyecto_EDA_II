@@ -12,17 +12,18 @@ class Node{
         int altura;
         Node * izquierda;
         Node * derecha;
+        int index;
     public:
-        Node(string n,string h){
+        Node(string f,string h){
             altura = 1;
             izquierda = nullptr;
             derecha = nullptr;
             fecha.clear();
             horaI.clear();
-            setFecha(n);
+            setFecha(f);
             setHoraS(h);
             horaS = h;
-            fechaS = n;   
+            fechaS = f;   
         }
         vector<int> getFecha() { return fecha; }
         vector<int> getHoraS() { return horaI; }
@@ -31,7 +32,8 @@ class Node{
         int getAltura() { return altura; }
         Node* getIzquierda() { return izquierda; }
         Node* getDerecha() { return derecha; }
-    
+        void setIndex(int valor) { index = valor; }
+        int getIndex() { return index; }
         void setFecha(string valor) {
             vector<int> fechaInt;
             stringstream ss(valor);
@@ -98,8 +100,8 @@ class ArbolAVL{
             nodo->setAltura(alt);
         }
         
-        void insertarR(string n,string h) {
-            insertar(raiz, n,h);
+        void insertarR(string f,string h,int n) {
+            insertar(raiz, f,h,n);
         }
         
         Node * rotacionIzquierda(Node *actualRaiz) {
@@ -214,16 +216,17 @@ class ArbolAVL{
             }
             return false;
         }
-        void insertar(Node*& nodo, string n, string h) {
-            vector<int> fechaN = Fecha(n);
+        void insertar(Node*& nodo, string f, string h,int n) {
+            vector<int> fechaN = Fecha(f);
             vector<int> horaN = HoraS(h);
             if (fechaN.empty() || horaN.empty()) return;
             if(nodo==nullptr){
-                nodo = new Node(n,h);
+                nodo = new Node(f,h);
+                nodo->setIndex(n);
             }
             else if (FechaIzquierda(fechaN, nodo->getFecha())) {
                 Node * tmp = nodo->getIzquierda();
-                insertar(tmp, n,h);
+                insertar(tmp, f,h,n);
                 nodo->setIzquierda (tmp);
             }
             else if(FechaIgual(fechaN, nodo->getFecha())){
@@ -232,17 +235,17 @@ class ArbolAVL{
                     return;
                 }else if(HoraIzquierda(horaN, nodo->getHoraS())){
                     Node * tmp = nodo->getIzquierda();
-                    insertar(tmp, n,h);
+                    insertar(tmp, f,h,n);
                     nodo->setIzquierda (tmp);
                 }else{
                     Node * tmp = nodo->getDerecha();
-                    insertar(tmp, n,h);
+                    insertar(tmp, f,h,n);
                     nodo->setDerecha (tmp);
                 }
             }
             else{
                 Node * tmp = nodo->getDerecha();
-                insertar(tmp, n,h);
+                insertar(tmp, f,h,n);
                 nodo->setDerecha (tmp);
             }
             
@@ -294,28 +297,12 @@ class ArbolAVL{
                 preorder(nodo->getDerecha());
             }
         }
-        
-        bool buscarR(string n,string h){
-            return buscar(raiz, n,h);
-        }
-        bool buscar(Node* nodo, string n,string h)
-        {
-            if (nodo == nullptr) 
-                return false;
-            vector<int> fechaN = Fecha(n);
-            vector<int> horaN = HoraS(h);
-            if (FechaIgual(fechaN, nodo->getFecha())&&HoraIgual(horaN, nodo->getHoraS()))
-                return true;
-            if(FechaIgual(fechaN, nodo->getFecha())&&!HoraIgual(horaN, nodo->getHoraS())){
-                if(HoraIzquierda(horaN, nodo->getHoraS()))
-                    return buscar(nodo->getIzquierda(), n,h);
-                else
-                    return buscar(nodo->getDerecha(), n,h);
-            }
-            if (FechaIzquierda(fechaN, nodo->getFecha()))
-                return buscar(nodo->getIzquierda(), n,h);
-            else
-                return buscar(nodo->getDerecha(), n,h);
+        Node* buscarNodoPorIndex(Node* nodo, int idx) {
+            if (!nodo) return nullptr;
+            if (nodo->getIndex() == idx) return nodo;
+            Node* l = buscarNodoPorIndex(nodo->getIzquierda(), idx);
+            if (l) return l;
+            return buscarNodoPorIndex(nodo->getDerecha(), idx);
         }
         Node* minValueNode(Node* nodo) {
             if(!nodo) return nullptr;
@@ -323,48 +310,35 @@ class ArbolAVL{
             while (tmp->getIzquierda() != nullptr) tmp = tmp->getIzquierda();
             return tmp;
         }
-        Node* eliminar(Node* node, string n, string h) {
-            if (node == nullptr) return node;
-            vector<int> fechaN = Fecha(n);
-            vector<int> horaN = HoraS(h);
-            if(fechaN.empty() || horaN.empty()) return node;
-            if (FechaIzquierda(fechaN, node->getFecha())){
-                Node*tmp=node->getIzquierda();
-                node->setIzquierda(eliminar(tmp, n, h));
+        Node* eliminarPorClave(Node* node, const vector<int>& fechaN, const vector<int>& horaN) {
+            if (!node) return node;
+            if (FechaIzquierda(fechaN, node->getFecha()) ||
+                (FechaIgual(fechaN, node->getFecha()) && HoraIzquierda(horaN, node->getHoraS()))) {
+                node->setIzquierda(eliminarPorClave(node->getIzquierda(), fechaN, horaN));
             }
-            else if (FechaDerecha(fechaN, node->getFecha())){
-                Node*tmp=node->getDerecha();
-                node->setDerecha(eliminar(tmp, n, h));
+            else if (FechaDerecha(fechaN, node->getFecha()) ||
+                     (FechaIgual(fechaN, node->getFecha()) && HoraDerecha(horaN, node->getHoraS()))) {
+                node->setDerecha(eliminarPorClave(node->getDerecha(), fechaN, horaN));
             }
             else {
-                if(HoraIzquierda(horaN, node->getHoraS())){
-                    Node*tmp=node->getIzquierda();
-                    node->setIzquierda(eliminar(tmp, n, h));
-                }
-                else if(HoraDerecha(horaN, node->getHoraS())){
-                    Node*tmp=node->getDerecha();
-                    node->setDerecha(eliminar(tmp, n, h));
-                }
-                else {
-                    if (node->getIzquierda() == nullptr || node->getDerecha() == nullptr) {
-                        Node* temp = node->getIzquierda() ? node->getIzquierda() : node->getDerecha();
-                        if (temp == nullptr) {
-                            delete node;
-                            return nullptr;
-                        } else {
-                            Node* ret = temp;
-                            delete node;
-                            return ret;
-                        }
+                if (node->getIzquierda() == nullptr || node->getDerecha() == nullptr) {
+                    Node* temp = node->getIzquierda() ? node->getIzquierda() : node->getDerecha();
+                    if (temp == nullptr) {
+                        delete node;
+                        return nullptr;
                     } else {
-                        Node* temp = minValueNode(node->getDerecha());
-                        node->setFecha(temp->getFechaString());
-                        node->setHoraS(temp->getHoraString());
-                        node->setDerecha(eliminar(node->getDerecha(),temp->getFechaString() , temp->getHoraString()));
+                        Node* ret = temp;
+                        delete node;
+                        return ret;
                     }
+                } else {
+                    Node* temp = minValueNode(node->getDerecha());
+                    node->setFecha(temp->getFechaString());
+                    node->setHoraS(temp->getHoraString());
+                    node->setIndex(temp->getIndex());
+                    node->setDerecha(eliminarPorClave(node->getDerecha(), Fecha(temp->getFechaString()), HoraS(temp->getHoraString())));
                 }
             }
-            if(node == nullptr) return node;
             actualizarAltura(node);
             int facBalance = factorBalance(node);
 
@@ -383,23 +357,51 @@ class ArbolAVL{
 
             return node;
         }
-        void eliminarR(string n, string h){
-            if(!buscarR(n,h)){
-                cout << "No se encontró la cita " << n << " " << h << endl;
-            }else{
-                cout << "Cita eliminada: " << n << " " << h << endl;
-                raiz=eliminar(raiz, n, h);
-            }
+        bool existeFechaHora(Node* nodo, const vector<int>& f, const vector<int>& h, int excludeIndex = -1) {
+            if (!nodo) return false;
+            if (FechaIgual(f, nodo->getFecha()) && HoraIgual(h, nodo->getHoraS()) && nodo->getIndex() != excludeIndex) return true;
+            if (FechaIzquierda(f, nodo->getFecha()) || (FechaIgual(f, nodo->getFecha()) && HoraIzquierda(h, nodo->getHoraS())))
+                return existeFechaHora(nodo->getIzquierda(), f, h, excludeIndex);
+            else
+                return existeFechaHora(nodo->getDerecha(), f, h, excludeIndex);
         }
-        void editarR(string fechaV, string horaV, string fechaN, string horaN){
-            if(!buscarR(fechaV, horaV)){
-                cout << "Cita a editar no encontrada: " << fechaV << " " << horaV << endl;
-            }else if(buscarR(fechaN, horaN)){
-                cout << "Nueva fecha y hora ya ocupada: " << fechaN << " " << horaN << endl;
-            }else{
-                eliminar(raiz, fechaV, horaV);
-                insertar(raiz, fechaN, horaN);
-                cout << "Cita editada: " << fechaV << " " << horaV << " -> " << fechaN << " " << horaN << endl;
+        bool buscarR(int n){
+            return buscarNodoPorIndex(raiz, n) != nullptr;
+        }
+        void eliminarR(int n){
+            Node* objetivo = buscarNodoPorIndex(raiz, n);
+            if (!objetivo) {
+                cout << "No se encontró la cita" << endl;
+                return;
             }
+            vector<int> f = Fecha(objetivo->getFechaString());
+            vector<int> h = HoraS(objetivo->getHoraString());
+            if (f.empty() || h.empty()) {
+                cout << "Error: datos de fecha/hora inválidos" << endl;
+                return;
+            }
+            raiz = eliminarPorClave(raiz, f, h);
+        }
+        void editarR(int n, string fechaNstr, string horaNstr){
+            Node* objetivo = buscarNodoPorIndex(raiz, n);
+            if (!objetivo) {
+                cout << "Cita a editar no encontrada" <<endl;
+                return;
+            }
+
+            vector<int> nuevaF = Fecha(fechaNstr);
+            vector<int> nuevaH = HoraS(horaNstr);
+            if (nuevaF.empty() || nuevaH.empty()) {
+                cout << "Fecha/hora nueva inválida" << endl;
+                return;
+            }
+            if (existeFechaHora(raiz, nuevaF, nuevaH, n)) {
+                cout << "Nueva fecha y hora ya ocupada: " << fechaNstr << " " << horaNstr << endl;
+                return;
+            }
+            vector<int> oldF = Fecha(objetivo->getFechaString());
+            vector<int> oldH = HoraS(objetivo->getHoraString());
+            raiz = eliminarPorClave(raiz, oldF, oldH);
+            insertar(raiz, fechaNstr, horaNstr, n);
         }
 };

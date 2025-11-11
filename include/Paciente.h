@@ -30,8 +30,12 @@ public:
     string getNombre(){return nombre;}
     bool getAtendido(){return atendido;}
     bool getConCita(){return conCita;}
-
+    void setFecha(string f){fecha = f;}
+    void setHora(string h){hora = h;}
     void setAtendido(bool atendido){
         this->atendido = atendido;
+    }
+    void setConCita(bool conCita){
+        this->conCita = conCita;
     }
 };

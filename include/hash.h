@@ -88,6 +88,10 @@ public:
             if (p->getConCita()) estado = " Con cita programada";
             
             cout << "Estado: " << estado << endl;
+            if(p->getConCita()){
+                cout << "Fecha de cita: " << p->getFecha() << endl;
+                cout << "Hora de cita: " << p->getHora() << endl;
+            }
         } else {
             cout << "Paciente no encontrado" << endl;
         }
