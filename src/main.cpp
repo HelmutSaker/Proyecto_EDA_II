@@ -77,7 +77,7 @@ public:
         cout << "Se cargaron " << contador << " pacientes desde el archivo." << endl;
     }
     // Funcionalidad 2: Atención de pacientes
-    void atenderSiguiente(ArbolAVL& arbolCitas) {
+    void atenderSiguiente() {
         if (colaUrgencia->getSize() == 0) {
             cout << "No hay pacientes en espera para atender." << endl;
             return;
@@ -93,8 +93,6 @@ public:
         
         if (pacienteHash != nullptr) {
             pacienteHash->setAtendido(true);
-            pacienteHash->setConCita(true);
-            arbolCitas.insertarR(pacienteHash->getFecha(), pacienteHash->getHora(), tablaHash.hashFunction(pacienteHash->getId()));
             cout << "\n=== PACIENTE ATENDIDO ===" << endl;
             cout << "ID: " << pacienteHash->getId() << endl;
             cout << "Nombre: " << pacienteHash->getNombre() << endl;
@@ -106,7 +104,7 @@ public:
             cout << "Error: Paciente no encontrado en el sistema." << endl;
         }
     }
-    void atenderNSiguiente(ArbolAVL& arbolCitas,int N) {
+    void atenderNSiguiente(int N) {
         if (colaUrgencia->getSize() == 0) {
             cout << "No hay pacientes en espera para atender." << endl;
             return;
@@ -122,8 +120,6 @@ public:
         Paciente* pacienteHash = tablaHash.buscarPorIndex(indexHash);
         if (pacienteHash != nullptr) {
             pacienteHash->setAtendido(true);
-            pacienteHash->setConCita(true);
-            arbolCitas.insertarR(pacienteHash->getFecha(), pacienteHash->getHora(), tablaHash.hashFunction(pacienteHash->getId()));
             cout << "\n=== PACIENTE ATENDIDO ===" << endl;
             cout << "ID: " << pacienteHash->getId() << endl;
             cout << "Nombre: " << pacienteHash->getNombre() << endl;
@@ -215,70 +211,175 @@ int main() {
             cin >> decision;
             if (decision == 1) {
                 cout << "\n=== ATENCION DE PACIENTES ===" << endl;
-                sistema.atenderSiguiente(arbolCitas);
+                sistema.atenderSiguiente();
             } else if (decision == 2) {
+                cout << "\n=== ATENCION DE PACIENTES ===" << endl;
                 int N;
                 cout << "Ingrese la cantidad de pacientes a atender: ";
                 cin >> N;
-                sistema.atenderNSiguiente(arbolCitas,N);
-            }
-            
+                sistema.atenderNSiguiente(N);
+            } 
         }
         else if (accion == 3) {
+            int decision;
             cout << "\n=== CANCELAR CITA ===" << endl;
-            int n;
-            cout << "Ingrese el id del paciente: ";
-            cin >> n;
-            Hash& hashRef = sistema.getHashTable();
-            int idx = hashRef.hashFunction(n);
-            Paciente* p = hashRef.buscarPorIndex(idx);
-            if (p == nullptr) {
-                cout << "Error: paciente con id " << n << " no encontrado en la tabla hash." << endl;
-            } else {
-                if(!p->getConCita()){
-                    cout << "Error: el paciente con id " << n << " no tiene una cita programada." << endl;
-                }else{
-                    arbolCitas.eliminarR(idx);
-                    p->setConCita(false);
-                    p->setFecha("");
-                    p->setHora("");
-                    cout << "Cita cancelada para el paciente ID " << n << endl;
+            cout << "1. Cancelar una cita" << endl;
+            cout << "2. Cancelar N citas" << endl;
+            cout << "Opcion: ";
+            cin >> decision;
+
+            if (decision == 1) {
+                int id;
+                cout << "\n=== CANCELAR CITA ===" << endl;
+                cout << "Ingrese ID del paciente: ";
+                cin >> id;
+                Hash& hashRef = sistema.getHashTable();
+                int idx = hashRef.hashFunction(id);
+                Paciente* p = hashRef.buscarPorIndex(idx);
+                if (p == nullptr) {
+                    cout << "Error: paciente con id " << id << " no encontrado en la tabla hash." << endl;
+                } else {
+                    if(!p->getConCita()){
+                        cout << "Error: el paciente con id " << id << " no tiene una cita programada." << endl;
+                    }else{
+                        p->setConCita(false);
+                        p->setFecha("");
+                        p->setHora("");
+                        arbolCitas.eliminarR(idx);
+                        cout << "Cita cancelada para el paciente ID " << id << endl;
+                    }
+                }
+            } else if (decision == 2) {
+                int N;
+                cout << "\n=== CANCELAR CITA ===" << endl;
+                cout << "Ingrese la cantidad de citas a insertar: ";
+                cin >> N;
+                int id;
+                cout << "Ingrese desde que id se desea citas a insertar: ";
+                cin >> id;
+                for(int i=0;i<N;i++){
+                    Hash& hashRef = sistema.getHashTable();
+                    int idx = hashRef.hashFunction(id);
+                    Paciente* p = hashRef.buscarPorIndex(idx);
+                    if (p == nullptr) {
+                        cout << "Error: paciente con id " << id << " no encontrado en la tabla hash." << endl;
+                    } else {
+                        if(!p->getConCita()){
+                            cout << "Error: el paciente con id " << id << " no tiene una cita programada." << endl;
+                        }else{
+                            p->setConCita(false);
+                            p->setFecha("");
+                            p->setHora("");
+                            arbolCitas.eliminarR(idx);
+                            cout << "Cita cancelada para el paciente ID " << id << endl;
+                        }
+                    }
+                    id++;
                 }
             }
         }
         else if (accion == 4) {
-            cout << "\n=== REPROGRAMAR CITA ===" << endl;
-            string fechaN, horaN;
-            int n;
-            cout << "Ingrese el id del paciente: ";
-            cin >> n;
-            cout << "Ingrese nueva fecha (DD/MM/AAAA): ";
-            cin >> fechaN;
-            cout << "Ingrese nueva hora (HH:MM): ";
-            cin >> horaN;
 
-            Hash& hashRef = sistema.getHashTable();
-            int idx = hashRef.hashFunction(n);
-            Paciente* p = hashRef.buscarPorIndex(idx);
-            if (p == nullptr) {
-                cout << "Error: paciente con id " << n << " no encontrado en la tabla hash." << endl;
-            } else {
-                if(!p->getConCita()){
-                    cout << "Error: el paciente con id " << n << " no tiene una cita programada." << endl;
-                }else{
-                    arbolCitas.editarR(idx, fechaN, horaN);
-                    p->setFecha(fechaN);
-                    p->setHora(horaN);
-                    cout << "Cita reprogramada para ID " << n << " a " << fechaN << " " << horaN << endl;
+            int decision;
+            cout << "\n=== REPROGRAMAR CITA ===" << endl;
+            cout << "1. Reprogramar una cita" << endl;
+            cout << "2. Reprogramar N citas" << endl;
+            cout << "Opcion: ";
+            cin >> decision;
+
+            if (decision == 1) {
+                int id;
+                string fechaN, horaN;
+                cout << "\n=== REPROGRAMAR CITA ===" << endl;
+                cout << "Ingrese el id del paciente: ";
+                cin >> id;
+                cout << "Ingrese nueva fecha (DD/MM/AAAA): ";
+                cin >> fechaN;
+                cout << "Ingrese nueva hora (HH:MM): ";
+                cin >> horaN;
+                Hash& hashRef = sistema.getHashTable();
+                int idx = hashRef.hashFunction(id);
+                Paciente* p = hashRef.buscarPorIndex(idx);
+                if (p == nullptr) {
+                    cout << "Error: paciente con id " << id << " no encontrado en la tabla hash." << endl;
+                } else {
+                    if(!p->getConCita()){
+                        cout << "Error: el paciente con id " << id << " no tiene una cita programada." << endl;
+                    }else{
+                        arbolCitas.editarR(idx, fechaN, horaN);
+                        p->setFecha(fechaN);
+                        p->setHora(horaN);
+                        cout << "Cita reprogramada para ID " << id << " a " << fechaN << " " << horaN << endl;
+                    }
+                }
+            } else if (decision == 2) {
+                int N;
+                cout << "\n=== REPROGRAMAR CITA ===" << endl;
+                cout << "Ingrese la cantidad de citas a reprogramar: ";
+                cin >> N;
+                int id;
+                cout << "Ingrese desde que id se desea las citas reprogramar: ";
+                cin >> id;
+                int id2;
+                cout <<"Ingrese desde que id se optendran las nuevas fechas y horas: ";
+                cin >> id2;
+                for(int i=0;i<N;i++){
+                    Hash& hashRef = sistema.getHashTable();
+                    int idx = hashRef.hashFunction(id);
+                    Paciente* p = hashRef.buscarPorIndex(idx);
+                    Hash& hashRef2 = sistema.getHashTable();
+                    int idx2 = hashRef2.hashFunction(id2);
+                    Paciente* p2 = hashRef2.buscarPorIndex(idx2);
+                    string fechaN = p2->getFecha();
+                    string horaN = p2->getHora();
+                    if (p == nullptr) {
+                        cout << "Error: paciente con id " << id << " no encontrado en la tabla hash." << endl;
+                    } else {
+                        if(!p->getConCita()){
+                            cout << "Error: el paciente con id " << id << " no tiene una cita programada." << endl;
+                        }else{
+                            if(arbolCitas.existeFechaHora(arbolCitas.getRaiz(),arbolCitas.Fecha(fechaN),arbolCitas.HoraS(horaN)))
+                            {
+                                cout<<"Cita ya existe en esta fecha no se puede insertar la cita"<<endl;
+                            }else{
+                                arbolCitas.editarR(idx, fechaN, horaN);
+                                p->setFecha(fechaN);
+                                p->setHora(horaN);
+                                cout << "Cita reprogramada para ID " << id << " a " << fechaN << " " << horaN << endl;
+                            }
+                        }
+                    }
+                    id++;
+                    id2++;
                 }
             }
         }
         else if (accion == 5) {
-            int id;
-            cout << "\n=== CONSULTA DE PACIENTE ===" << endl;
-            cout << "Ingrese ID del paciente: ";
-            cin >> id;
-            sistema.consultarPaciente(id);
+            int decision;
+            cout << "\n=== CONSULTAR PACIENTES ===" << endl;
+            cout << "1. Consulta de un pacientes" << endl;
+            cout << "2. Consulta de N pacientes" << endl;
+            cout << "Opcion: ";
+            cin >> decision;
+            if (decision == 1) {
+                int id;
+                cout << "\n=== CONSULTAR PACIENTES ===" << endl;
+                cout << "Ingrese ID del paciente: ";
+                cin >> id;
+                sistema.consultarPaciente(id);  
+            } else if (decision == 2) {
+                int N;
+                int id;
+                cout << "\n=== CONSULTAR PACIENTES ===" << endl;
+                cout << "Ingrese la cantidad de pacientes a consultar: ";
+                cin >> N;
+                cout << "Ingrese desde que id se desea consultar: ";
+                cin >> id;
+                for(int i=0;i<N;i++){
+                    sistema.consultarPaciente(id);  
+                    id++;
+                }
+            }  
         }
         else if (accion == 6) {
             sistema.mostrarEstado();
@@ -288,7 +389,7 @@ int main() {
         }
         else if (accion == 8) {
             int decision;
-            cout << "\n=== REGISTRO DE PACIENTES ===" << endl;
+            cout << "\n=== INSERTAR CITAS ===" << endl;
             cout << "1. Insertar cita:" << endl;
             cout << "2. Insertar N citas:" << endl;
             cout << "Opcion: ";
@@ -297,6 +398,7 @@ int main() {
             if (decision == 1) {
                 string fecha,hora;
                 int id;
+                cout << "\n=== INSERTAR CITAS ===" << endl;
                 cout << "Ingrese ID del paciente: ";
                 cin >> id;
                 cout << "Ingrese fecha cita(DD/MM/AAAA): ";
@@ -327,9 +429,12 @@ int main() {
             } else if (decision == 2) {
                 string fecha,hora;
                 int N;
+                cout << "\n=== INSERTAR CITAS ===" << endl;
                 cout << "Ingrese la cantidad de citas a insertar: ";
                 cin >> N;
-                int id=4000;
+                int id;
+                cout << "Ingrese desde que id se desea citas a insertar: ";
+                cin >> id;
                 for(int i=0;i<N;i++){
                     Hash& hashRef = sistema.getHashTable();
                     int idx = hashRef.hashFunction(id);
