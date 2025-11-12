@@ -118,7 +118,9 @@ class ArbolAVL{
             
             return nuevaRaiz;
         }
-        
+        Node * getRaiz(){
+            return raiz;
+        }
         Node * rotacionDerecha(Node *actualRaiz) {
             if(!actualRaiz) return nullptr;
             Node *nuevaRaiz = actualRaiz->getIzquierda();
@@ -357,13 +359,13 @@ class ArbolAVL{
 
             return node;
         }
-        bool existeFechaHora(Node* nodo, const vector<int>& f, const vector<int>& h, int excludeIndex = -1) {
+        bool existeFechaHora(Node* nodo, vector<int> f, vector<int> h) {
             if (!nodo) return false;
-            if (FechaIgual(f, nodo->getFecha()) && HoraIgual(h, nodo->getHoraS()) && nodo->getIndex() != excludeIndex) return true;
+            if (FechaIgual(f, nodo->getFecha()) && HoraIgual(h, nodo->getHoraS()) && nodo->getIndex() != -1) return true;
             if (FechaIzquierda(f, nodo->getFecha()) || (FechaIgual(f, nodo->getFecha()) && HoraIzquierda(h, nodo->getHoraS())))
-                return existeFechaHora(nodo->getIzquierda(), f, h, excludeIndex);
+                return existeFechaHora(nodo->getIzquierda(), f, h);
             else
-                return existeFechaHora(nodo->getDerecha(), f, h, excludeIndex);
+                return existeFechaHora(nodo->getDerecha(), f, h);
         }
         bool buscarR(int n){
             return buscarNodoPorIndex(raiz, n) != nullptr;
@@ -395,7 +397,7 @@ class ArbolAVL{
                 cout << "Fecha/hora nueva inválida" << endl;
                 return;
             }
-            if (existeFechaHora(raiz, nuevaF, nuevaH, n)) {
+            if (existeFechaHora(raiz, nuevaF, nuevaH)) {
                 cout << "Nueva fecha y hora ya ocupada: " << fechaNstr << " " << horaNstr << endl;
                 return;
             }

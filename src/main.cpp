@@ -170,7 +170,8 @@ int main() {
         cout << "5. Consultar paciente" << endl;
         cout << "6. Mostrar estado del sistema" << endl;
         cout << "7. Mostrar estado de citas" << endl;
-        cout << "8. Salir" << endl;
+        cout << "8. Insertar cita" << endl;
+        cout << "9. Salir" << endl;
         cout << "Opcion: ";
         
         cin >> accion;
@@ -286,6 +287,76 @@ int main() {
             arbolCitas.inorderR();
         }
         else if (accion == 8) {
+            int decision;
+            cout << "\n=== REGISTRO DE PACIENTES ===" << endl;
+            cout << "1. Insertar cita:" << endl;
+            cout << "2. Insertar N citas:" << endl;
+            cout << "Opcion: ";
+            cin >> decision;
+
+            if (decision == 1) {
+                string fecha,hora;
+                int id;
+                cout << "Ingrese ID del paciente: ";
+                cin >> id;
+                cout << "Ingrese fecha cita(DD/MM/AAAA): ";
+                cin >> fecha;
+                cout << "Ingrese hora cita(HH:MM):";
+                cin >> hora;
+                Hash& hashRef = sistema.getHashTable();
+                int idx = hashRef.hashFunction(id);
+                Paciente* p = hashRef.buscarPorIndex(idx);
+                if (p == nullptr) {
+                    cout << "Error: paciente con id " << id << " no encontrado en la tabla hash." << endl;
+                } else {
+                    if(p->getConCita()){
+                        cout << "Error: el paciente con id " << id << " ya tiene una cita programada." << endl;
+                    }else{
+                        p->setConCita(true);
+                        p->setFecha(fecha);
+                        p->setHora(hora);
+                        if(arbolCitas.existeFechaHora(arbolCitas.getRaiz(),arbolCitas.Fecha(fecha),arbolCitas.HoraS(hora)))
+                        {
+                            cout<<"Cita ya existe en esta fecha no se puede insertar la cita"<<endl;
+                        }else{
+                            cout << "Cita insertada para el paciente ID " << id << endl;
+                            arbolCitas.insertarR(fecha, hora, idx);
+                        }
+                    }
+                }
+            } else if (decision == 2) {
+                string fecha,hora;
+                int N;
+                cout << "Ingrese la cantidad de citas a insertar: ";
+                cin >> N;
+                int id=4000;
+                for(int i=0;i<N;i++){
+                    Hash& hashRef = sistema.getHashTable();
+                    int idx = hashRef.hashFunction(id);
+                    Paciente* p = hashRef.buscarPorIndex(idx);
+                    if (p == nullptr) {
+                        cout << "Error: paciente con id " << id << " no encontrado en la tabla hash." << endl;
+                    } else {
+                        if(p->getConCita()){
+                            cout << "Error: el paciente con id " << id << " ya tiene una cita programada." << endl;
+                        }else{
+                            p->setConCita(true);
+                            fecha=p->getFecha();
+                            hora=p->getHora();
+                            if(arbolCitas.existeFechaHora(arbolCitas.getRaiz(),arbolCitas.Fecha(fecha),arbolCitas.HoraS(hora)))
+                            {
+                                cout<<"Cita ya existe en esta fecha no se puede insertar la cita"<<endl;
+                            }else{
+                                cout << "Cita insertada para el paciente ID " << id << endl;
+                                arbolCitas.insertarR(fecha, hora, idx);
+                            }
+                        }
+                    }
+                    id++;
+                }
+            }
+        }
+        else if (accion == 9) {
             cout << "Saliendo del sistema..." << endl;
             break;
         }
