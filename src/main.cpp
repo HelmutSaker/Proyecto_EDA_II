@@ -106,7 +106,35 @@ public:
             cout << "Error: Paciente no encontrado en el sistema." << endl;
         }
     }
+    void atenderNSiguiente(ArbolAVL& arbolCitas,int N) {
+        if (colaUrgencia->getSize() == 0) {
+            cout << "No hay pacientes en espera para atender." << endl;
+            return;
+        }
 
+        for(int i=0;i<N;i++){
+        // Extraer el paciente más urgente del heap
+        tuple<int, int> maxUrg = colaUrgencia->extractMax();
+        int urgencia = get<0>(maxUrg);
+        int indexHash = get<1>(maxUrg);
+        
+        // Buscar en la hash table para obtener datos completos
+        Paciente* pacienteHash = tablaHash.buscarPorIndex(indexHash);
+        if (pacienteHash != nullptr) {
+            pacienteHash->setAtendido(true);
+            pacienteHash->setConCita(true);
+            arbolCitas.insertarR(pacienteHash->getFecha(), pacienteHash->getHora(), tablaHash.hashFunction(pacienteHash->getId()));
+            cout << "\n=== PACIENTE ATENDIDO ===" << endl;
+            cout << "ID: " << pacienteHash->getId() << endl;
+            cout << "Nombre: " << pacienteHash->getNombre() << endl;
+            cout << "Nivel de urgencia: " << pacienteHash->getUrgencia() << endl;
+            cout << "Fecha de cita: " << pacienteHash->getFecha() << endl;
+            cout << "Hora de cita: " << pacienteHash->getHora() << endl;
+            cout << "=========================" << endl;
+        } else {
+            cout << "Error: Paciente no encontrado en el sistema." << endl;
+        }}
+    }
     // Mostrar estado del sistema
     void mostrarEstado() {
         cout << "\n=== ESTADO DEL SISTEMA ===" << endl;
@@ -178,8 +206,22 @@ int main() {
             }
         }
         else if (accion == 2) {
+            int decision;
             cout << "\n=== ATENCION DE PACIENTES ===" << endl;
-            sistema.atenderSiguiente(arbolCitas);
+            cout << "1. Atencion de un pacientes" << endl;
+            cout << "2. Atencion de N pacientes" << endl;
+            cout << "Opcion: ";
+            cin >> decision;
+            if (decision == 1) {
+                cout << "\n=== ATENCION DE PACIENTES ===" << endl;
+                sistema.atenderSiguiente(arbolCitas);
+            } else if (decision == 2) {
+                int N;
+                cout << "Ingrese la cantidad de pacientes a atender: ";
+                cin >> N;
+                sistema.atenderNSiguiente(arbolCitas,N);
+            }
+            
         }
         else if (accion == 3) {
             cout << "\n=== CANCELAR CITA ===" << endl;

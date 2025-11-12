@@ -195,16 +195,16 @@ class ArbolAVL{
         }
         bool HoraIzquierda(vector<int> f1, vector<int> f2){
             if(f1.size()!=2 || f2.size()!=2) return false;
-            if(f1[1]< f2[1] ||
-               (f1[1]== f2[1] && f1[0]< f2[0])){
+            if(f1[0]< f2[0] ||
+               (f1[0]== f2[0] && f1[1]< f2[1])){
                 return true;
             }
             return false;
         }
         bool HoraDerecha(vector<int> f1, vector<int> f2){
             if(f1.size()!=2 || f2.size()!=2) return false;
-            if(f1[1]> f2[1] ||
-               (f1[1]== f2[1] && f1[0]> f2[0]) ){
+            if(f1[0]> f2[0] ||
+               (f1[0]== f2[0] && f1[1]> f2[1]) ){
                 return true;
             }
             return false;
