@@ -14,7 +14,7 @@ private:
     MaxHeap* colaUrgencia;
     int capacidadHeap;
 public:
-    SistemaTriage(int capacidad = 10000) : capacidadHeap(capacidad) {
+    SistemaTriage(int capacidad = 10007) : capacidadHeap(capacidad) {
         colaUrgencia = new MaxHeap(capacidad);
     }
 
@@ -158,7 +158,7 @@ int main() {
     ArbolAVL arbolCitas;
     while (true) {
         cout << "\n=== SISTEMA DE TRIAGE HOSPITALARIO ===" << endl;
-        cout << "Seleccione la accion a realizar (1-6): " << endl;
+        cout << "Seleccione la accion a realizar (1-9): " << endl;
         cout << "1. Registrar pacientes" << endl;
         cout << "2. Atender pacientes" << endl;
         cout << "3. Cancelar cita" << endl;
